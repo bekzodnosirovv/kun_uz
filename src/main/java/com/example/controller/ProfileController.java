@@ -1,5 +1,8 @@
 package com.example.controller;
 
+
+
+import com.example.dto.ProfileDTO;
 import com.example.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +15,14 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> create() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> create(@RequestBody ProfileDTO dto) {
+        return ResponseEntity.ok(profileService.create(dto));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> update() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> update(@RequestBody ProfileDTO dto) {
+        profileService.update(dto);
+        return ResponseEntity.ok("Update");
     }
 
     @PutMapping("/update/detail")

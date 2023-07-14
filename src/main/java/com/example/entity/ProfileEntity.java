@@ -4,6 +4,7 @@ import com.example.enums.ProfileRole;
 import com.example.enums.ProfileStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -28,9 +29,10 @@ public class ProfileEntity {
     @Column(name = "role")
     private ProfileRole role;
     @Column(name = "visible")
-    private Boolean visible;
+    private Boolean visible = Boolean.TRUE;
     @Column(name = "created_date")
-    private LocalDateTime created_date;
+    private LocalDateTime created_date = LocalDateTime.now();
+    @Column(name = "photo_id")
     private Integer photo_id;
 
 }

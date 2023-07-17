@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dto.RegionDTO;
 import com.example.entity.RegionEntity;
+import com.example.enums.Language;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.RegionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,6 @@ public class RegionService {
         regionRepository.save(entity);
         dto.setId(entity.getId());
         return dto;
-
-
     }
 
     public void update(Integer id, RegionDTO dto) {
@@ -42,7 +41,7 @@ public class RegionService {
 
     public void delete(Integer id) {
         getById(id);
-        regionRepository.deleteById(id);
+        regionRepository.deletedById(id);
     }
 
     public List<RegionDTO> getAll() {
@@ -55,9 +54,22 @@ public class RegionService {
         return dtoList;
     }
 
-    public List<RegionDTO> getByLan(String lan) {
-
-        return null;
+    public List<RegionDTO> getByLan(Language lan) {
+        List<RegionEntity> entities = regionRepository.findAllByVisibleTrueOrderByOrderNumber();
+        List<RegionDTO> dtoList = new LinkedList<>();
+        entities.forEach(entity -> {
+            RegionDTO dto = new RegionDTO();
+            dto.setId(entity.getId());
+            dto.setOrderNumber(entity.getOrderNumber());
+            switch (lan) {
+                case uz -> dto.setName(entity.getNameUz());
+                case en -> dto.setName(entity.getNameEn());
+                case ru -> dto.setName(entity.getNameRu());
+            }
+            dtoList.add(dto);
+        });
+        if (dtoList.isEmpty()) throw new ItemNotFoundException("Region not found.");
+        return dtoList;
     }
 
     public RegionDTO getById(Integer id) {
@@ -68,7 +80,15 @@ public class RegionService {
 
 
     private RegionDTO toDTO(RegionEntity entity) {
-        return null;
+        RegionDTO dto = new RegionDTO();
+        dto.setId(entity.getId());
+        dto.setOrderNumber(entity.getOrderNumber());
+        dto.setNameUz(entity.getNameUz());
+        dto.setNameEn(entity.getNameEn());
+        dto.setNameRu(entity.getNameRu());
+        dto.setVisible(entity.getVisible());
+        dto.setCreatedDate(entity.getCreatedDate());
+        return dto;
 
     }
 }

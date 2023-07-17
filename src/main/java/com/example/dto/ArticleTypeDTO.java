@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CategoryDTO {
+public class ArticleTypeDTO {
     private Integer id;
     private Integer orderNumber;
     private String name;

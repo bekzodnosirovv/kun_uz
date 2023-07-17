@@ -1,6 +1,8 @@
 package com.example.controller;
 
 import com.example.dto.CategoryDTO;
+import com.example.dto.RegionDTO;
+import com.example.enums.Language;
 import com.example.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,9 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Integer id) {
-        categoryService.update(id);
+    public ResponseEntity<?> update(@PathVariable("id") Integer id,
+                                    @RequestBody CategoryDTO dto) {
+        categoryService.update(id,dto);
         return ResponseEntity.ok("Category update !!!");
     }
 
@@ -35,7 +38,7 @@ public class CategoryController {
     }
 
     @GetMapping("/lan")
-    public ResponseEntity<?> getByLan(@RequestParam("lan") String lan) {
+    public ResponseEntity<?> getByLan(@RequestParam("lan") Language lan) {
         return ResponseEntity.ok(categoryService.getByLan(lan));
     }
 }

@@ -1,40 +1,44 @@
 package com.example.controller;
 
+import com.example.dto.RegionDTO;
 import com.example.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/region")
+@RequestMapping("/api/v1/region")
 public class RegionController {
     @Autowired
     private RegionService regionService;
 
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create() {
-        return ResponseEntity.ok().build();
+    @PostMapping("")
+    public ResponseEntity<?> create(@RequestBody RegionDTO dto) {
+        return ResponseEntity.ok(regionService.create(dto));
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> update() {
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Integer id,
+                                    @RequestBody RegionDTO dto) {
+        regionService.update(id, dto);
+        return ResponseEntity.ok("Region update !!!");
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete() {
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+        regionService.delete(id);
+        return ResponseEntity.ok("Region deleted !!!");
     }
 
-    @GetMapping("/get/all")
+    @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(regionService.getAll());
     }
 
-    @GetMapping("/getById")
-    public ResponseEntity<?> getByLang() {
-        return ResponseEntity.ok().build();
+    @GetMapping("/lan")
+    public ResponseEntity<?> getByLan(@RequestParam("lan") String lan) {
+        return ResponseEntity.ok(regionService.getByLan(lan));
     }
 
 }

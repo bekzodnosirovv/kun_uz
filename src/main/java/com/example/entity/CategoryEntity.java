@@ -13,15 +13,15 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "order_number")
-    private Integer order_number;
+    private Integer orderNumber;
     @Column(name = "name_uz")
-    private String name_uz;
+    private String nameUz;
     @Column(name = "name_ru")
-    private String name_ru;
+    private String nameRu;
     @Column(name = "name_en")
-    private String name_en;
+    private String nameEn;
     @Column(name = "visible")
-    private Boolean visible;
+    private Boolean visible = Boolean.TRUE;
     @Column(name = "created_date")
-    private LocalDateTime created_date;
+    private LocalDateTime createdDate = LocalDateTime.now();
 }

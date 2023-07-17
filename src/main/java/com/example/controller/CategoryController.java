@@ -1,38 +1,41 @@
 package com.example.controller;
 
+import com.example.dto.CategoryDTO;
 import com.example.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/v1/category")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create() {
-        return ResponseEntity.ok().build();
+    @PostMapping("")
+    public ResponseEntity<?> create(@RequestBody CategoryDTO dto) {
+        return ResponseEntity.ok(categoryService.create(dto));
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> update() {
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Integer id) {
+        categoryService.update(id);
+        return ResponseEntity.ok("Category update !!!");
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete() {
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+        categoryService.delete(id);
+        return ResponseEntity.ok("Category deleted !!!");
     }
 
-    @GetMapping("/get/all")
+    @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(categoryService.getAll());
     }
 
-    @GetMapping("/getById")
-    public ResponseEntity<?> getByLang() {
-        return ResponseEntity.ok().build();
+    @GetMapping("/lan")
+    public ResponseEntity<?> getByLan(@RequestParam("lan") String lan) {
+        return ResponseEntity.ok(categoryService.getByLan(lan));
     }
 }

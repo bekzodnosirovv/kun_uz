@@ -1,0 +1,37 @@
+### Create
+
+POST http://localhost:8080/api/v1/region
+Content-Type: application/json
+
+{
+  "orderNumber": 4,
+  "nameEn": "NamanganEn"
+
+
+
+}
+
+
+### Update
+
+PUT http://localhost:8080/api/v1/region/2
+Content-Type: application/json
+
+{
+  "nameRu":"BukharaRu",
+  "nameEn": "BukharaEn"
+}
+
+### Delete
+
+DELETE http://localhost:8080/api/v1/region/2
+
+
+### Get All
+
+GET http://localhost:8080/api/v1/region/all
+
+
+### Get by lan
+
+GET http://localhost:8080/api/v1/region/lan?lan=uz

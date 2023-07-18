@@ -1,9 +1,12 @@
 package com.example.controller;
 
 
-
+import com.example.dto.JwtDTO;
 import com.example.dto.ProfileDTO;
+import com.example.dto.ProfileFilterDTO;
+import com.example.enums.ProfileRole;
 import com.example.service.ProfileService;
+import com.example.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,38 +18,53 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody ProfileDTO dto) {
-        return ResponseEntity.ok(profileService.create(dto));
+    public ResponseEntity<?> create(@RequestHeader("Authorization") String authToken,
+                                    @RequestBody ProfileDTO dto) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        return ResponseEntity.ok(profileService.create(jwtDTO, dto));
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody ProfileDTO dto) {
-        profileService.update(dto);
-        return ResponseEntity.ok("Update");
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@RequestHeader("Authorization") String authToken,
+                                    @PathVariable("id") Integer id,
+                                    @RequestBody ProfileDTO dto) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        profileService.update(id, dto);
+        return ResponseEntity.ok("Update profile !!!");
     }
 
-    @PutMapping("/update/detail")
-    public ResponseEntity<?> updateProfileDetail() {
-        return ResponseEntity.ok().build();
+    @PutMapping("/detail/{id}")
+    public ResponseEntity<?> updateProfileDetail(@RequestHeader("Authorization") String authToken,
+                                                 @RequestBody ProfileDTO dto) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.USER);
+        profileService.updateProfileDetail(jwtDTO.getId(), dto);
+        return ResponseEntity.ok("Update profile detail !!!");
     }
 
-    @GetMapping("/get/all")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok().build();
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authToken) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        return ResponseEntity.ok(profileService.getAll());
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete() {
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@RequestHeader("Authorization") String authToken,
+                                    @PathVariable("id") Integer id) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        profileService.delete(id);
+        return ResponseEntity.ok("Deleted profile !!!");
     }
 
     @PutMapping("/update/photo")
-    public ResponseEntity<?> updatePhoto() {
+    public ResponseEntity<?> updatePhoto(@RequestHeader("Authorization") String authToken) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> filter() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> filter(@RequestHeader("Authorization") String authToken,
+                                    @RequestBody ProfileFilterDTO filterDTO) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        return ResponseEntity.ok(profileService.filter(filterDTO));
     }
 }

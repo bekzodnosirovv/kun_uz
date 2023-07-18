@@ -45,7 +45,7 @@ public class RegionService {
     }
 
     public List<RegionDTO> getAll() {
-        Iterable<RegionEntity> entities = regionRepository.findAll(Sort.by("order_number").descending());
+        Iterable<RegionEntity> entities = regionRepository.findAll(Sort.by("orderNumber").descending());
         List<RegionDTO> dtoList = new LinkedList<>();
         entities.forEach(r -> {
             dtoList.add(toDTO(r));
@@ -65,7 +65,9 @@ public class RegionService {
                 case uz -> dto.setName(entity.getNameUz());
                 case en -> dto.setName(entity.getNameEn());
                 case ru -> dto.setName(entity.getNameRu());
+
             }
+
             dtoList.add(dto);
         });
         if (dtoList.isEmpty()) throw new ItemNotFoundException("Region not found.");

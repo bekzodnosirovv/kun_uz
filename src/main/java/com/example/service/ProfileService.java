@@ -1,11 +1,14 @@
 package com.example.service;
 
+import com.example.dto.JwtDTO;
 import com.example.dto.ProfileDTO;
+import com.example.dto.ProfileFilterDTO;
 import com.example.entity.ProfileEntity;
 import com.example.enums.ProfileRole;
 import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
+import com.example.repository.CustomRepository;
 import com.example.repository.ProfileRepository;
 import com.example.util.PhoneIsValid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProfileService {
@@ -20,10 +26,11 @@ public class ProfileService {
     @Autowired
     private ProfileRepository profileRepository;
     @Autowired
-    private PhoneIsValid phoneIsValid;
+    private CustomRepository customRepository;
 
 
-    public ProfileDTO create(ProfileDTO dto) {
+    public ProfileDTO create(JwtDTO jwtDTO, ProfileDTO dto) {
+
         isValidProfile(dto);
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new ItemNotFoundException("Email already exists.");
@@ -32,7 +39,7 @@ public class ProfileService {
             throw new ItemNotFoundException("Phone already exists.");
         }
 
-        ProfileEntity entity = toEntity(dto);
+        ProfileEntity entity = new ProfileEntity();
         entity.setName(dto.getName());
         entity.setSurname(dto.getSurname());
         entity.setEmail(dto.getEmail());
@@ -48,45 +55,65 @@ public class ProfileService {
 
     }
 
-    public void update(ProfileDTO dto) {
+    public void update(Integer id, ProfileDTO dto) {
+        getById(id);
+        ProfileEntity entity = profileRepository.findById(id).get();
+        if (dto.getName() != null) entity.setName(dto.getName());
+        if (dto.getSurname() != null) entity.setSurname(dto.getSurname());
+        if (dto.getVisible() != null) entity.setVisible(dto.getVisible());
+        if (dto.getPassword() != null) entity.setPassword(dto.getPassword());
+        if (dto.getStatus() != null) entity.setStatus(dto.getStatus());
+        if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
+        if (dto.getRole() != null) entity.setRole(dto.getRole());
+
+        profileRepository.save(entity);
+    }
+
+    public void updateProfileDetail(Integer id, ProfileDTO dto) {
+        getById(id);
 
 
     }
 
-    public void updateProfileDetail() {
+    public List<ProfileDTO> getAll() {
+        Iterable<ProfileEntity> iterable = profileRepository.findAll();
+        List<ProfileDTO> list = new LinkedList<>();
+        iterable.forEach(entity -> list.add(toDTO(entity)));
+        return list;
     }
 
-    public void getAll() {
-    }
-
-    public void delete() {
+    public void delete(Integer id) {
+        getById(id);
+        profileRepository.deletedById(id);
     }
 
     public void updatePhoto() {
     }
 
-    public void filter() {
+    public void getById(Integer id) {
+        Optional<ProfileEntity> optional = profileRepository.findById(id);
+        if (optional.isEmpty()) throw new ItemNotFoundException("Profile not found.");
+        toDTO(optional.get());
+
     }
 
-    private void toDTO(ProfileEntity entity) {
+    public ProfileDTO filter(ProfileFilterDTO filterDTO) {
+        List<ProfileEntity> list = (List<ProfileEntity>) customRepository.filterStudent(filterDTO);
+        return (ProfileDTO) list.stream().map(this::toDTO).toList();
+    }
+
+    private ProfileDTO toDTO(ProfileEntity entity) {
         ProfileDTO dto = new ProfileDTO();
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setSurname(entity.getSurname());
-
-
-    }
-
-    public ProfileEntity toEntity(ProfileDTO dto) {
-        ProfileEntity entity = new ProfileEntity();
-        entity.setName(dto.getName());
-        entity.setSurname(dto.getSurname());
-        entity.setEmail(dto.getEmail());
-        entity.setPhone(dto.getPhone());
-        entity.setPassword(dto.getPassword());
-        entity.setStatus(dto.getStatus());
-        entity.setRole(dto.getRole());
-
-        return entity;
+        dto.setEmail(entity.getEmail());
+        dto.setPhone(entity.getPhone());
+        dto.setRole(entity.getRole());
+        dto.setVisible(entity.isVisible());
+        dto.setStatus(entity.getStatus());
+        dto.setCreatedDate(entity.getCreatedDate());
+        return dto;
     }
 
     private void isValidProfile(ProfileDTO dto) {
@@ -102,16 +129,16 @@ public class ProfileService {
         if (dto.getPhone() == null || dto.getPhone().isBlank()) {
             throw new AppBadRequestException("Phone required.");
         }
-        if (!phoneIsValid.checkPhone(dto.getPhone())) {
+        if (!PhoneIsValid.checkPhone(dto.getPhone())) {
             throw new AppBadRequestException("Phone number is invalid.");
         }
         if (dto.getPassword() == null || dto.getPassword().isBlank()) {
-            throw new AppBadRequestException("Password not found.");
+            throw new AppBadRequestException("Password required.");
         }
         if (dto.getRole() == null) {
             throw new AppBadRequestException("Profile role required.");
         }
-        if (Arrays.stream(ProfileRole.values()).noneMatch(t -> t.equals(dto.getRole()))){
+        if (Arrays.stream(ProfileRole.values()).noneMatch(t -> t.equals(dto.getRole()))) {
             throw new AppBadRequestException("Profile role not found.");
         }
 

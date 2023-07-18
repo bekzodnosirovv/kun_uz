@@ -46,7 +46,7 @@ public class CategoryService {
     }
 
     public List<CategoryDTO> getAll() {
-        Iterable<CategoryEntity> entities = categoryRepository.findAll(Sort.by("order_number").descending());
+        Iterable<CategoryEntity> entities = categoryRepository.findAll(Sort.by("orderNumber").descending());
         List<CategoryDTO> dtoList = new LinkedList<>();
         entities.forEach(r -> {
             dtoList.add(toDTO(r));

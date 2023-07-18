@@ -31,7 +31,7 @@ public class ProfileEntity {
     @Column(name = "role", nullable = false)
     private ProfileRole role;
     @Column(name = "visible", nullable = false)
-    private Boolean visible = Boolean.TRUE;
+    private boolean visible = Boolean.TRUE;
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate = LocalDateTime.now();
 

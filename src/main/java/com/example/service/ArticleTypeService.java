@@ -43,7 +43,7 @@ public class ArticleTypeService {
     }
 
     public PageImpl<ArticleTypeDTO> getAll(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("order_number").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("orderNumber").descending());
         Page<ArticleTypeEntity> pageList = articleTypeRepository.findAll(pageable);
         return new PageImpl<>(pageList.getContent().stream().map(this::toDTO).toList(), pageable, pageList.getTotalElements());
     }

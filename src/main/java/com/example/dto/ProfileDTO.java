@@ -21,5 +21,6 @@ public class ProfileDTO {
     private ProfileRole role;
     private Boolean visible;
     private LocalDateTime createdDate;
+    private String jwt;
 
 }

@@ -1,9 +1,7 @@
 package com.example.util;
 
-import org.springframework.stereotype.Component;
 
-
-public class PhoneIsValid {
+public class PhoneIsValidUtil {
 
     public static boolean checkPhone(String phone) {
         if (!phone.startsWith("+998") || phone.length() != 13) return false;

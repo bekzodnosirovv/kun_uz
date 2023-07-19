@@ -25,6 +25,10 @@ public interface ProfileRepository extends CrudRepository<ProfileEntity, Integer
     @Query("update ProfileEntity set visible=false where id=:id")
     int deletedById(@Param("id") Integer id);
 
+    @Transactional
+    @Modifying
+    @Query("update ProfileEntity set name=:name,surname=:surname where id=:id")
+    int updateDetail(@Param("id") Integer id, @Param("name") String name, @Param("surname") String surname);
 
 
 }

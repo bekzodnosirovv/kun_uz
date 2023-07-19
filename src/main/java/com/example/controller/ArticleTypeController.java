@@ -34,7 +34,7 @@ public class ArticleTypeController {
     @GetMapping("/all/page")
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(articleTypeService.getAll(page,size));
+        return ResponseEntity.ok(articleTypeService.getAll(page-1,size));
     }
 
     @GetMapping("/lan")

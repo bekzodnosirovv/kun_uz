@@ -2,6 +2,8 @@
 
 POST http://localhost:8080/api/v1/region
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+
 
 {
   "orderNumber": 4,
@@ -16,6 +18,7 @@ Content-Type: application/json
 
 PUT http://localhost:8080/api/v1/region/2
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
 
 {
   "nameRu":"BukharaRu",
@@ -25,13 +28,16 @@ Content-Type: application/json
 ### Delete
 
 DELETE http://localhost:8080/api/v1/region/2
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
 
 
 ### Get All
 
 GET http://localhost:8080/api/v1/region/all
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
 
 
 ### Get by lan
 
 GET http://localhost:8080/api/v1/region/lan?lan=uz
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ

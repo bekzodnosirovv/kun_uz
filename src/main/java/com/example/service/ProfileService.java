@@ -10,8 +10,13 @@ import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.CustomRepository;
 import com.example.repository.ProfileRepository;
-import com.example.util.PhoneIsValid;
+import com.example.util.MD5Util;
+import com.example.util.PhoneIsValidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -29,7 +34,7 @@ public class ProfileService {
     private CustomRepository customRepository;
 
 
-    public ProfileDTO create(JwtDTO jwtDTO, ProfileDTO dto) {
+    public ProfileDTO create(Integer id, ProfileDTO dto) {
 
         isValidProfile(dto);
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -44,6 +49,7 @@ public class ProfileService {
         entity.setSurname(dto.getSurname());
         entity.setEmail(dto.getEmail());
         entity.setPhone(dto.getPhone());
+        entity.setPassword(MD5Util.encode(dto.getPassword()));
         entity.setRole(dto.getRole());
         entity.setStatus(ProfileStatus.ACTIVE);
 
@@ -52,7 +58,6 @@ public class ProfileService {
         dto.setCreatedDate(entity.getCreatedDate());
 
         return dto;
-
     }
 
     public void update(Integer id, ProfileDTO dto) {
@@ -61,7 +66,7 @@ public class ProfileService {
         if (dto.getName() != null) entity.setName(dto.getName());
         if (dto.getSurname() != null) entity.setSurname(dto.getSurname());
         if (dto.getVisible() != null) entity.setVisible(dto.getVisible());
-        if (dto.getPassword() != null) entity.setPassword(dto.getPassword());
+        if (dto.getPassword() != null) entity.setPassword(MD5Util.encode(dto.getPassword()));
         if (dto.getStatus() != null) entity.setStatus(dto.getStatus());
         if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
         if (dto.getRole() != null) entity.setRole(dto.getRole());
@@ -70,16 +75,17 @@ public class ProfileService {
     }
 
     public void updateProfileDetail(Integer id, ProfileDTO dto) {
-        getById(id);
-
+        ProfileDTO updateProfile = getById(id);
+        if (dto.getName() != null) updateProfile.setName(dto.getName());
+        if (dto.getSurname() != null) updateProfile.setSurname(dto.getSurname());
+        profileRepository.updateDetail(id, updateProfile.getName(), updateProfile.getSurname());
 
     }
 
-    public List<ProfileDTO> getAll() {
-        Iterable<ProfileEntity> iterable = profileRepository.findAll();
-        List<ProfileDTO> list = new LinkedList<>();
-        iterable.forEach(entity -> list.add(toDTO(entity)));
-        return list;
+    public PageImpl<ProfileDTO> getAll(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProfileEntity> entityPage = profileRepository.findAll(pageable);
+        return new PageImpl<>(entityPage.getContent().stream().map(this::toDTO).toList(), pageable, entityPage.getTotalElements());
     }
 
     public void delete(Integer id) {
@@ -90,11 +96,10 @@ public class ProfileService {
     public void updatePhoto() {
     }
 
-    public void getById(Integer id) {
+    public ProfileDTO getById(Integer id) {
         Optional<ProfileEntity> optional = profileRepository.findById(id);
         if (optional.isEmpty()) throw new ItemNotFoundException("Profile not found.");
-        toDTO(optional.get());
-
+        return toDTO(optional.get());
     }
 
     public ProfileDTO filter(ProfileFilterDTO filterDTO) {
@@ -129,7 +134,7 @@ public class ProfileService {
         if (dto.getPhone() == null || dto.getPhone().isBlank()) {
             throw new AppBadRequestException("Phone required.");
         }
-        if (!PhoneIsValid.checkPhone(dto.getPhone())) {
+        if (!PhoneIsValidUtil.checkPhone(dto.getPhone())) {
             throw new AppBadRequestException("Phone number is invalid.");
         }
         if (dto.getPassword() == null || dto.getPassword().isBlank()) {

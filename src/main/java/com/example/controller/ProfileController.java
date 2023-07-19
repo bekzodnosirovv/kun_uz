@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/profile")
 public class ProfileController {
+
     @Autowired
     private ProfileService profileService;
 
@@ -21,19 +22,19 @@ public class ProfileController {
     public ResponseEntity<?> create(@RequestHeader("Authorization") String authToken,
                                     @RequestBody ProfileDTO dto) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
-        return ResponseEntity.ok(profileService.create(jwtDTO, dto));
+        return ResponseEntity.ok(profileService.create(jwtDTO.getId(), dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestHeader("Authorization") String authToken,
                                     @PathVariable("id") Integer id,
                                     @RequestBody ProfileDTO dto) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
         profileService.update(id, dto);
         return ResponseEntity.ok("Update profile !!!");
     }
 
-    @PutMapping("/detail/{id}")
+    @PutMapping("/detail")
     public ResponseEntity<?> updateProfileDetail(@RequestHeader("Authorization") String authToken,
                                                  @RequestBody ProfileDTO dto) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.USER);
@@ -42,29 +43,31 @@ public class ProfileController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authToken) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
-        return ResponseEntity.ok(profileService.getAll());
+    public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authToken,
+                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        return ResponseEntity.ok(profileService.getAll(page-1,size));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String authToken,
                                     @PathVariable("id") Integer id) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
         profileService.delete(id);
         return ResponseEntity.ok("Deleted profile !!!");
     }
 
     @PutMapping("/update/photo")
     public ResponseEntity<?> updatePhoto(@RequestHeader("Authorization") String authToken) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/filter")
     public ResponseEntity<?> filter(@RequestHeader("Authorization") String authToken,
                                     @RequestBody ProfileFilterDTO filterDTO) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
         return ResponseEntity.ok(profileService.filter(filterDTO));
     }
 }

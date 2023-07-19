@@ -75,10 +75,10 @@ public class CategoryService {
 
     }
 
-    public CategoryDTO getById(Integer id) {
+    public void getById(Integer id) {
         Optional<CategoryEntity> entity = categoryRepository.findById(id);
         if (entity.isEmpty()) throw new ItemNotFoundException("Category not found.");
-        return toDTO(entity.get());
+        toDTO(entity.get());
     }
 
     private CategoryDTO toDTO(CategoryEntity entity) {
@@ -88,7 +88,7 @@ public class CategoryService {
         dto.setNameUz(entity.getNameUz());
         dto.setNameEn(entity.getNameEn());
         dto.setNameRu(entity.getNameRu());
-        dto.setVisible(entity.getVisible());
+        dto.setVisible(entity.isVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
 

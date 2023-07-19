@@ -11,9 +11,8 @@ import com.example.exp.ItemNotFoundException;
 import com.example.repository.ProfileRepository;
 import com.example.util.JWTUtil;
 import com.example.util.MD5Util;
-import com.example.util.PhoneIsValid;
+import com.example.util.PhoneIsValidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,7 +26,7 @@ public class AuthService {
     public ApiResponseDTO login(AuthDTO authDTO) {
 
         Optional<ProfileEntity> optional = profileRepository.findByPhone(authDTO.getPhone());
-        if (optional.isEmpty() || optional.get().getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
+        if (optional.isEmpty() || !optional.get().getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
             return new ApiResponseDTO(false, "Login or Password not found");
         }
         ProfileEntity profileEntity = optional.get();
@@ -80,7 +79,7 @@ public class AuthService {
         if (dto.getPhone() == null) {
             throw new AppBadRequestException("Phone required");
         }
-        if (!PhoneIsValid.checkPhone(dto.getPhone())) {
+        if (!PhoneIsValidUtil.checkPhone(dto.getPhone())) {
             throw new AppBadRequestException("Phone number is invalid");
         }
         if (dto.getPassword() == null) {

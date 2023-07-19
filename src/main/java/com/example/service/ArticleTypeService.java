@@ -80,7 +80,7 @@ public class ArticleTypeService {
         dto.setNameUz(entity.getNameUz());
         dto.setNameEn(entity.getNameEn());
         dto.setNameRu(entity.getNameRu());
-        dto.setVisible(entity.getVisible());
+        dto.setVisible(entity.isVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
 

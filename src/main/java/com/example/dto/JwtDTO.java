@@ -12,12 +12,11 @@ import java.util.Date;
 public class JwtDTO {
     private Integer id;
     private ProfileRole role;
-    private Date expireDate;
 
-    public JwtDTO(Integer id, ProfileRole role, Date expireDate) {
+    public JwtDTO(Integer id, ProfileRole role) {
         this.id = id;
         this.role = role;
-        this.expireDate = expireDate;
+
 
     }
 }

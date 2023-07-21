@@ -2,6 +2,7 @@ package com.example.util;
 
 import com.example.dto.JwtDTO;
 import com.example.enums.ProfileRole;
+import com.example.exp.UnAuthorizedException;
 import io.jsonwebtoken.*;
 
 import java.util.Date;
@@ -20,27 +21,29 @@ public class JWTUtil {
 
 
         jwtBuilder.setExpiration(new Date(System.currentTimeMillis() + (tokenLiveTime)));
-        jwtBuilder.setIssuer("kunuz test portali");
+        jwtBuilder.setIssuer("kun uz test portali");
         return jwtBuilder.compact();
     }
 
     public static JwtDTO decode(String token) {
-        JwtParser jwtParser = Jwts.parser();
-        jwtParser.setSigningKey(secretKey);
+        try {
+            JwtParser jwtParser = Jwts.parser();
+            jwtParser.setSigningKey(secretKey);
 
-        Jws<Claims> jws = jwtParser.parseClaimsJws(token);
+            Jws<Claims> jws = jwtParser.parseClaimsJws(token);
 
-        Claims claims = jws.getBody();
+            Claims claims = jws.getBody();
 
-        Integer id = (Integer) claims.get("id");
+            Integer id = (Integer) claims.get("id");
 
 
-        String role = (String) claims.get("role");
-        ProfileRole profileRole = ProfileRole.valueOf(role);
+            String role = (String) claims.get("role");
+            ProfileRole profileRole = ProfileRole.valueOf(role);
 
-        Date expireDate = claims.getExpiration();
-
-        return new JwtDTO(id, profileRole, expireDate);
+            return new JwtDTO(id, profileRole);
+        } catch (JwtException e) {
+            throw new UnAuthorizedException("Your session expired");
+        }
     }
 
 

@@ -74,10 +74,10 @@ public class RegionService {
         return dtoList;
     }
 
-    public RegionDTO getById(Integer id) {
+    public void getById(Integer id) {
         Optional<RegionEntity> entity = regionRepository.findById(id);
         if (entity.isEmpty()) throw new ItemNotFoundException("Region not found.");
-        return toDTO(entity.get());
+        toDTO(entity.get());
     }
 
 

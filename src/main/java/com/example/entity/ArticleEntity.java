@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -16,7 +17,7 @@ public class ArticleEntity {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
-    @Column(name = "title",nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -49,4 +50,12 @@ public class ArticleEntity {
     private boolean visible = Boolean.TRUE;
     @Column(name = "view_count")
     private Integer viewCount;
+
+    @ManyToMany
+    @JoinTable(
+            name = "article_types",
+            joinColumns = @JoinColumn(name = "article_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_type_id")
+    )
+    private List<ArticleTypeEntity> articleTypes;
 }

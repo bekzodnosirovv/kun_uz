@@ -1,0 +1,15 @@
+POST http://localhost:8080/api/v1/attach/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="photo_2023-03-27_14-51-02.jpg"
+
+< C:\Users\lenovo\Desktop\test\photo_2023-03-27_14-51-02.jpg
+
+
+### Get image load
+GET http://localhost:8080/api/v1/attach/open/241f3dbc-457f-4b1f-9f90-a7a82f00de35
+
+
+### Get pagination
+GET http://localhost:8080/api/v1/attach/pagination

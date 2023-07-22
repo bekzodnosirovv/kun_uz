@@ -1,25 +1,36 @@
 package com.example.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
+
 
 import java.time.LocalDateTime;
 
 @Data
-@Entity()
+@Entity
 @Table(name = "attach")
 public class AttachEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
+
     @Column(name = "original_name")
     private String originalName;
-    @Column(name = "path", nullable = false)
+
+    @Column(name = "path")
     private String path;
-    @Column(name = "size", nullable = false)
+
+    @Column(name = "size")
     private Long size;
-    @Column(name = "extension", nullable = false)
+
+    @Column(name = "extension")
     private String extension;
-    @Column(name = "created_date", nullable = false)
-    private LocalDateTime createdDate = LocalDateTime.now();
+
+    @Column(name = "created_date")
+    private LocalDateTime createdData = LocalDateTime.now();
+
+
 }

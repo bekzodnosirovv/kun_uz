@@ -1,6 +1,5 @@
 package com.example.dto;
 
-import com.example.entity.AttachEntity;
 import com.example.entity.CategoryEntity;
 import com.example.entity.ProfileEntity;
 import com.example.entity.RegionEntity;
@@ -19,7 +18,6 @@ public class ArticleDTO {
     private String description;
     private String content;
     private Integer sharedCount;
-    private AttachEntity imageId;
     private RegionEntity regionId;
     private CategoryEntity categoryId;
     private ProfileEntity moderatorId;

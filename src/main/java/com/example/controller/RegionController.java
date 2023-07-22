@@ -20,7 +20,7 @@ public class RegionController {
     @PostMapping("")
     public ResponseEntity<?> create(@RequestHeader("Authorization") String authToken,
                                     @RequestBody RegionDTO dto) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+
         return ResponseEntity.ok(regionService.create(dto));
     }
 
@@ -28,7 +28,7 @@ public class RegionController {
     public ResponseEntity<?> update(@RequestHeader("Authorization") String authToken,
                                     @PathVariable("id") Integer id,
                                     @RequestBody RegionDTO dto) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+
         regionService.update(id, dto);
         return ResponseEntity.ok("Region update !!!");
     }
@@ -36,14 +36,14 @@ public class RegionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String authToken,
                                     @PathVariable("id") Integer id) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+
         regionService.delete(id);
         return ResponseEntity.ok("Region deleted !!!");
     }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authToken) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
+
         return ResponseEntity.ok(regionService.getAll());
     }
 

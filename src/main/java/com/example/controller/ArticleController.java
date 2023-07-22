@@ -1,7 +1,10 @@
 package com.example.controller;
 
 import com.example.dto.ArticleDTO;
+import com.example.dto.JwtDTO;
+import com.example.enums.ProfileRole;
 import com.example.service.ArticleService;
+import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +21,26 @@ public class ArticleController {
     @PostMapping("/close")
     public ResponseEntity<?> create(@RequestBody ArticleDTO dto,
                                     HttpServletRequest request) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        return ResponseEntity.ok(articleService.create(jwtDTO.getId(), dto));
+    }
 
+//    @PutMapping("/close/{id}")
+//    public ResponseEntity<?> update(@PathVariable("id") String id,
+//                                    @RequestBody ArticleDTO dto,
+//                                    HttpServletRequest request) {
+//        return null;
+//    }
+
+    @DeleteMapping("/close/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") String id,
+                                    HttpServletRequest request) {
         return null;
     }
 
-    @PutMapping("/close")
-    public ResponseEntity<?> update(@RequestHeader("Authorization") String authToken) {
-        return null;
-    }
-
-    @DeleteMapping("close")
-    public ResponseEntity<?> delete(@RequestHeader("Authorization") String authToken) {
-        return null;
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> changeStatus(@RequestHeader("Authorization") String authToken) {
+    @PutMapping("/close/{id}")
+    public ResponseEntity<?> changeStatus(@PathVariable("id") Integer id,
+                                          HttpServletRequest request) {
         return null;
     }
 

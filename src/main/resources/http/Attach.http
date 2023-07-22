@@ -13,3 +13,10 @@ GET http://localhost:8080/api/v1/attach/open/241f3dbc-457f-4b1f-9f90-a7a82f00de3
 
 ### Get pagination
 GET http://localhost:8080/api/v1/attach/pagination
+
+
+### Download
+GET http://localhost:8080/api/v1/attach/download/241f3dbc-457f-4b1f-9f90-a7a82f00de35
+
+### Delete
+DELETE http://localhost:8080/api/v1/attach/closed/delete/0da8d648-0d27-4de3-8503-8fe5a84b7a2f

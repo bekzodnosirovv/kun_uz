@@ -19,14 +19,14 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody ProfileDTO dto, HttpServletRequest request) {
-
+    @PostMapping("/admin")
+    public ResponseEntity<?> create(@RequestBody ProfileDTO dto,
+                                    HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(profileService.create(jwtDTO.getId(), dto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @RequestBody ProfileDTO dto,
                                     HttpServletRequest request) {
@@ -43,15 +43,15 @@ public class ProfileController {
         return ResponseEntity.ok("Update profile detail !!!");
     }
 
-    @GetMapping("/all")
+    @GetMapping("/admin/all")
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(profileService.getAll(page-1,size));
+        return ResponseEntity.ok(profileService.getAll(page - 1, size));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
@@ -59,16 +59,14 @@ public class ProfileController {
         return ResponseEntity.ok("Deleted profile !!!");
     }
 
-    @PutMapping("/update/photo")
+    @PutMapping("/admin/photo")
     public ResponseEntity<?> updatePhoto(HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> filter(@RequestBody ProfileFilterDTO filterDTO,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+    public ResponseEntity<?> filter(@RequestBody ProfileFilterDTO filterDTO) {
         return ResponseEntity.ok(profileService.filter(filterDTO));
     }
 }

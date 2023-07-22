@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.dto.RegionDTO;
 import com.example.entity.RegionEntity;
 import com.example.enums.Language;
+import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.RegionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class RegionService {
     private RegionRepository regionRepository;
 
     public RegionDTO create(RegionDTO dto) {
+        isValidRegion(dto);
         RegionEntity entity = new RegionEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -91,6 +93,10 @@ public class RegionService {
         dto.setVisible(entity.isVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
+    }
+
+    private void isValidRegion(RegionDTO dto){
+        if (dto.getOrderNumber()==null) throw new AppBadRequestException("Order number required");
 
     }
 }

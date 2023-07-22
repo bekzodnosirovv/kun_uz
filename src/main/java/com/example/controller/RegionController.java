@@ -6,6 +6,7 @@ import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.RegionService;
 import com.example.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,39 +18,38 @@ public class RegionController {
     private RegionService regionService;
 
 
-    @PostMapping("")
-    public ResponseEntity<?> create(@RequestHeader("Authorization") String authToken,
-                                    @RequestBody RegionDTO dto) {
-
+    @PostMapping("/admin")
+    public ResponseEntity<?> create(@RequestBody RegionDTO dto,
+                                    HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(regionService.create(dto));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestHeader("Authorization") String authToken,
-                                    @PathVariable("id") Integer id,
-                                    @RequestBody RegionDTO dto) {
-
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Integer id,
+                                    @RequestBody RegionDTO dto,
+                                    HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         regionService.update(id, dto);
         return ResponseEntity.ok("Region update !!!");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@RequestHeader("Authorization") String authToken,
-                                    @PathVariable("id") Integer id) {
-
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id,
+                                    HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         regionService.delete(id);
         return ResponseEntity.ok("Region deleted !!!");
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authToken) {
-
+    @GetMapping("/admin/all")
+    public ResponseEntity<?> getAll(HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(regionService.getAll());
     }
 
     @GetMapping("/lan")
-    public ResponseEntity<?> getByLan(@RequestHeader("Authorization") String authToken,
-                                      @RequestParam("lan") Language lan) {
+    public ResponseEntity<?> getByLan(@RequestParam("lan") Language lan) {
         return ResponseEntity.ok(regionService.getByLan(lan));
     }
 

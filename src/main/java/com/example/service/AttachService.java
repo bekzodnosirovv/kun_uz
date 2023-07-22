@@ -153,14 +153,17 @@ public class AttachService {
         }
     }
 
-    public List<byte[]> pagination(Integer page, Integer size) {
+    public PageImpl<AttachDTO> pagination(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<AttachEntity> pageList = attachRepository.findAll(pageable);
-        List<byte[]> list = new LinkedList<>();
-        pageList.getContent().forEach(attachEntity -> {
-            list.add(loadByIdGeneral(attachEntity.getId()));
+        List<AttachDTO> list = new LinkedList<>();
+        pageList.getContent().forEach(entity -> {
+            AttachDTO dto = new AttachDTO();
+            dto.setId(entity.getId());
+            dto.setOriginalName(entity.getOriginalName());
+            list.add(dto);
         });
-        return list;
+        return new PageImpl<>(list, pageable, pageList.getTotalElements());
     }
 
     public void delete(String fileName) {

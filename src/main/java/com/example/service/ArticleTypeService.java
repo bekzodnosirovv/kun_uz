@@ -1,8 +1,10 @@
 package com.example.service;
 
 import com.example.dto.ArticleTypeDTO;
+import com.example.dto.RegionDTO;
 import com.example.entity.ArticleTypeEntity;
 import com.example.enums.Language;
+import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.ArticleTypeRepository;
 import org.springframework.data.domain.*;
@@ -17,6 +19,7 @@ public class ArticleTypeService {
     private ArticleTypeRepository articleTypeRepository;
 
     public ArticleTypeDTO create(ArticleTypeDTO dto) {
+        isValidArticleType(dto);
         ArticleTypeEntity entity = new ArticleTypeEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -66,10 +69,9 @@ public class ArticleTypeService {
         return dtoList;
     }
 
-    public ArticleTypeDTO getById(Integer id) {
+    public void getById(Integer id) {
         Optional<ArticleTypeEntity> entity = articleTypeRepository.findById(id);
         if (entity.isEmpty()) throw new ItemNotFoundException("Article type not found.");
-        return toDTO(entity.get());
     }
 
 
@@ -83,6 +85,11 @@ public class ArticleTypeService {
         dto.setVisible(entity.isVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
+
+    }
+
+    private void isValidArticleType(ArticleTypeDTO dto) {
+        if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
 
     }
 }

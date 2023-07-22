@@ -44,7 +44,7 @@ public class AttachController {
 
     }
 
-    @GetMapping(value = "/pagination",consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "/pagination")
     public ResponseEntity<?> pagination(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
 //        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
@@ -54,7 +54,7 @@ public class AttachController {
     @DeleteMapping(value = "/closed/delete/{fileName}")
     public ResponseEntity<?> delete(@PathVariable("fileName") String fileName,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+//        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         attachService.delete(fileName);
         return ResponseEntity.ok("Deleted !!!");
     }

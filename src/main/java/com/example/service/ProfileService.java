@@ -1,11 +1,9 @@
 package com.example.service;
 
-import com.example.dto.JwtDTO;
 import com.example.dto.ProfileDTO;
 import com.example.dto.ProfileFilterDTO;
 import com.example.entity.ProfileEntity;
 import com.example.enums.ProfileRole;
-import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.CustomRepository;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +31,7 @@ public class ProfileService {
     private CustomRepository customRepository;
 
 
-    public ProfileDTO create(Integer id, ProfileDTO dto) {
+    public ProfileDTO create(Integer pnId, ProfileDTO dto) {
 
         isValidProfile(dto);
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -51,7 +48,8 @@ public class ProfileService {
         entity.setPhone(dto.getPhone());
         entity.setPassword(MD5Util.encode(dto.getPassword()));
         entity.setRole(dto.getRole());
-        entity.setStatus(ProfileStatus.ACTIVE);
+        entity.setPnId(pnId);
+        entity.setStatus(dto.getStatus());
 
         profileRepository.save(entity);
         dto.setId(entity.getId());
@@ -96,15 +94,15 @@ public class ProfileService {
     public void updatePhoto() {
     }
 
+    public List<ProfileDTO> filter(ProfileFilterDTO filterDTO) {
+        List<ProfileEntity> list = customRepository.filterProfile(filterDTO);
+        return list.stream().map(this::toDTO).toList();
+    }
+
     public ProfileDTO getById(Integer id) {
         Optional<ProfileEntity> optional = profileRepository.findById(id);
         if (optional.isEmpty()) throw new ItemNotFoundException("Profile not found.");
         return toDTO(optional.get());
-    }
-
-    public ProfileDTO filter(ProfileFilterDTO filterDTO) {
-        List<ProfileEntity> list = (List<ProfileEntity>) customRepository.filterStudent(filterDTO);
-        return (ProfileDTO) list.stream().map(this::toDTO).toList();
     }
 
     private ProfileDTO toDTO(ProfileEntity entity) {
@@ -145,6 +143,9 @@ public class ProfileService {
         }
         if (Arrays.stream(ProfileRole.values()).noneMatch(t -> t.equals(dto.getRole()))) {
             throw new AppBadRequestException("Profile role not found.");
+        }
+        if (dto.getStatus() == null) {
+            throw new AppBadRequestException("Status required");
         }
 
 

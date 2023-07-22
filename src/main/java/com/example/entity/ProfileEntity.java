@@ -34,6 +34,8 @@ public class ProfileEntity {
     private boolean visible = Boolean.TRUE;
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate = LocalDateTime.now();
+    @Column(name = "pnId")
+    private Integer pnId;
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "photo_id")
 //    private AttachEntity photoId;

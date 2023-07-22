@@ -29,20 +29,19 @@ public class AuthService {
         if (optional.isEmpty() || !optional.get().getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
             return new ApiResponseDTO(false, "Login or Password not found");
         }
-        ProfileEntity profileEntity = optional.get();
-        if (!profileEntity.getStatus().equals(ProfileStatus.ACTIVE) || !profileEntity.isVisible()) {
+        if (optional.get().getStatus().equals(ProfileStatus.ACTIVE) || !optional.get().isVisible()) {
             return new ApiResponseDTO(false, "Your status not active. Please contact with support.");
         }
-
+        ProfileEntity entity = optional.get();
         ProfileDTO response = new ProfileDTO();
-        response.setId(profileEntity.getId());
-        response.setName(profileEntity.getName());
-        response.setSurname(profileEntity.getSurname());
-        response.setRole(profileEntity.getRole());
-        response.setPhone(profileEntity.getPhone());
-        response.setJwt(JWTUtil.encode(profileEntity.getId(), profileEntity.getRole()));
-        return new ApiResponseDTO(true, response);
+        response.setId(entity.getId());
+        response.setName(entity.getName());
+        response.setSurname(entity.getSurname());
+        response.setRole(entity.getRole());
+        response.setPhone(entity.getPhone());
+        response.setJwt(JWTUtil.encode(entity.getId(), entity.getRole()));
 
+        return new ApiResponseDTO(true, response);
     }
 
     public ProfileDTO registration(ProfileDTO dto) {

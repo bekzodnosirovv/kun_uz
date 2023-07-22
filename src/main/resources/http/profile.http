@@ -48,8 +48,8 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb
 ### Filter
 GET http://localhost:8080/api/v1/profile/filter
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+
 
 {
-  "name": "Eshmat"
+  "name": "Es"
 }

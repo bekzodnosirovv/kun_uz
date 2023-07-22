@@ -1,8 +1,10 @@
 package com.example.service;
 
 import com.example.dto.CategoryDTO;
+import com.example.dto.RegionDTO;
 import com.example.entity.CategoryEntity;
 import com.example.enums.Language;
+import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public CategoryDTO create(CategoryDTO dto) {
+        isValidCategory(dto);
         CategoryEntity entity = new CategoryEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -91,6 +94,11 @@ public class CategoryService {
         dto.setVisible(entity.isVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
+
+    }
+
+    private void isValidCategory(CategoryDTO dto) {
+        if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
 
     }
 }

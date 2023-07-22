@@ -15,9 +15,12 @@ public class SecuredFilterConfig {
     public FilterRegistrationBean<Filter> filterRegistrationBean() {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
         bean.setFilter(jwtFilter);
-        bean.addUrlPatterns("/api/v1/profile/*");
-        bean.addUrlPatterns("/api/v1/region/closed/*");
-//        bean.addUrlPatterns("/api/v1/attach/closed/*");
+        bean.addUrlPatterns("/api/v1/profile/admin/*");
+        bean.addUrlPatterns("/api/v1/region/admin/*");
+        bean.addUrlPatterns("/api/v1/category/admin/*");
+        bean.addUrlPatterns("/api/v1/articleType/admin/*");
+        bean.addUrlPatterns("/api/v1/attach/closed/*");
+
         return bean;
     }
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class EmailHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     @Column(columnDefinition = "TEXT")
     private String message;
     @Column(name = "email", nullable = false)

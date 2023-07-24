@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.ArticleDTO;
 import com.example.dto.JwtDTO;
+import com.example.enums.ArticleStatus;
 import com.example.enums.ProfileRole;
 import com.example.service.ArticleService;
 import com.example.util.SecurityUtil;
@@ -18,34 +19,41 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-    @PostMapping("/close")
+    @PostMapping("/closed")
     public ResponseEntity<?> create(@RequestBody ArticleDTO dto,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
-        return ResponseEntity.ok(articleService.create(jwtDTO.getId(), dto));
+//        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        return ResponseEntity.ok(articleService.create(dto));
     }
 
-//    @PutMapping("/close/{id}")
-//    public ResponseEntity<?> update(@PathVariable("id") String id,
-//                                    @RequestBody ArticleDTO dto,
-//                                    HttpServletRequest request) {
-//        return null;
-//    }
+    @PutMapping(value = "/closed/{id}")
+    public ResponseEntity<?> update(@RequestBody ArticleDTO dto,
+                                    @PathVariable("id") String id,
+                                    HttpServletRequest request) {
+        articleService.update();
+        return ResponseEntity.ok("Update article !!!");
+    }
 
-    @DeleteMapping("/close/{id}")
+    @DeleteMapping("/closed/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") String id,
                                     HttpServletRequest request) {
-        return null;
+        SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        articleService.delete(id);
+        return ResponseEntity.ok("Article deleted !!!");
     }
 
-    @PutMapping("/close/{id}")
-    public ResponseEntity<?> changeStatus(@PathVariable("id") Integer id,
+    @PutMapping("/closed/changeStatus/{id}")
+    public ResponseEntity<?> changeStatus(@PathVariable("id") String id,
+                                          @RequestParam("status") ArticleStatus status,
                                           HttpServletRequest request) {
-        return null;
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.PUBLISHER);
+        articleService.changeStatus(id, jwtDTO.getId(), status);
+        return ResponseEntity.ok("Article published !!!");
     }
 
-    @GetMapping("/5")
-    public ResponseEntity<?> getLast5ByType(@RequestParam("type") Integer id) {
+    @GetMapping("/lastFive")
+    public ResponseEntity<?> getLastFiveByType(@RequestParam("type") Integer id) {
+        articleService.getLastFiveByType(id);
         return null;
     }
 

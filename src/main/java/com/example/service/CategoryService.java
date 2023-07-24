@@ -81,7 +81,6 @@ public class CategoryService {
     public void getById(Integer id) {
         Optional<CategoryEntity> entity = categoryRepository.findById(id);
         if (entity.isEmpty()) throw new ItemNotFoundException("Category not found.");
-        toDTO(entity.get());
     }
 
     private CategoryDTO toDTO(CategoryEntity entity) {

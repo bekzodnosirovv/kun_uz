@@ -14,8 +14,8 @@ import java.util.List;
 public class ArticleEntity {
 
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
     @Column(name = "title", nullable = false)
     private String title;
@@ -49,7 +49,7 @@ public class ArticleEntity {
     @Column(name = "visible")
     private boolean visible = Boolean.TRUE;
     @Column(name = "view_count")
-    private Integer viewCount;
+    private int viewCount;
 
     @ManyToMany
     @JoinTable(

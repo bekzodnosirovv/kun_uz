@@ -144,6 +144,7 @@ public class AttachService {
             Path file = Paths.get(getUrl(entity.getPath(), entity.getId(), entity.getExtension()));
             Resource resource = new UrlResource(file.toUri());
 
+
             if (resource.exists() || resource.isReadable()) return resource;
             else throw new AppBadRequestException("Could not read the file!");
 

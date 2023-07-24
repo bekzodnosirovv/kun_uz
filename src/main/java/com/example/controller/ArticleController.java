@@ -19,22 +19,23 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-    @PostMapping("/closed")
+    @PostMapping(value = "/closed")
     public ResponseEntity<?> create(@RequestBody ArticleDTO dto,
                                     HttpServletRequest request) {
-//        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
-        return ResponseEntity.ok(articleService.create(dto));
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        return ResponseEntity.ok(articleService.create(jwtDTO.getId(), dto));
     }
 
     @PutMapping(value = "/closed/{id}")
     public ResponseEntity<?> update(@RequestBody ArticleDTO dto,
                                     @PathVariable("id") String id,
                                     HttpServletRequest request) {
-        articleService.update();
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        articleService.update(id, dto, jwtDTO.getId());
         return ResponseEntity.ok("Update article !!!");
     }
 
-    @DeleteMapping("/closed/{id}")
+    @DeleteMapping(value = "/closed/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") String id,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
@@ -42,36 +43,36 @@ public class ArticleController {
         return ResponseEntity.ok("Article deleted !!!");
     }
 
-    @PutMapping("/closed/changeStatus/{id}")
+    @PutMapping(value = "/closed/changeStatus/{id}")
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id,
                                           @RequestParam("status") ArticleStatus status,
                                           HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.PUBLISHER);
-        articleService.changeStatus(id, jwtDTO.getId(), status);
-        return ResponseEntity.ok("Article published !!!");
+        return ResponseEntity.ok(articleService.changeStatus(id, jwtDTO.getId(), status));
     }
 
-    @GetMapping("/lastFive")
+    @GetMapping(value = "/lastFive")
     public ResponseEntity<?> getLastFiveByType(@RequestParam("type") Integer id) {
-        articleService.getLastFiveByType(id);
-        return null;
+        return ResponseEntity.ok(articleService.getLastFiveByType(id));
     }
 
-    @GetMapping("/3")
-    public ResponseEntity<?> getLast53ByType(@RequestParam("type") Integer id) {
-        return null;
+    @GetMapping(value = "/lastThree")
+    public ResponseEntity<?> getLastThreeByType(@RequestParam("type") Integer id) {
+        return ResponseEntity.ok(articleService.getLastThreeByType(id));
     }
 
-    @GetMapping("/8")
-    public ResponseEntity<?> getLast8(@RequestBody List<String> list) {
-        return null;
+    @GetMapping(value = "/lastEight")
+    public ResponseEntity<?> getLastEight(@RequestBody List<String> list) {
+        return ResponseEntity.ok(articleService.getLastEight(list));
     }
 
+    @GetMapping(value = "/byIdAndLan")
     public ResponseEntity<?> getByIdAndLang() {
         return null;
     }
 
-    public ResponseEntity<?> getLast4ByType() {
+    @GetMapping(value = "/lastFour")
+    public ResponseEntity<?> getLastFourByType() {
         return null;
     }
 
@@ -95,21 +96,24 @@ public class ArticleController {
         return null;
     }
 
-    public ResponseEntity<?> getByCategoryPagination() {
-        return null;
+    @GetMapping(value = "/byCategory/{catId}/page")
+    public ResponseEntity<?> getByCategoryPagination(@PathVariable("catId") Integer catId,
+                                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                     @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(articleService.byCategory(catId,page-1,size));
     }
 
-    @PutMapping("/view/{id}")
+    @GetMapping(value = "/view/{id}")
     public ResponseEntity<?> increaseViewCountById(@PathVariable("id") String id) {
-        return null;
+        return ResponseEntity.ok(articleService.increaseViewCountById(id));
     }
 
-    @PutMapping("/shared/{id}")
+    @GetMapping(value = "/shared/{id}")
     public ResponseEntity<?> increaseShareCountById(@PathVariable("id") String id) {
-        return null;
+        return ResponseEntity.ok(articleService.increaseShareCountById(id));
     }
 
-    @GetMapping("/filter")
+    @GetMapping(value = "/filter")
     public ResponseEntity<?> filter() {
         return null;
     }

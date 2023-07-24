@@ -1,16 +1,15 @@
 package com.example.dto;
 
-import com.example.entity.CategoryEntity;
-import com.example.entity.ProfileEntity;
-import com.example.entity.RegionEntity;
 import com.example.enums.ArticleStatus;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 
 import java.time.LocalDateTime;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleDTO {
 
     private String id;

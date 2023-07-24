@@ -49,7 +49,7 @@ public class ArticleEntity {
     @Column(name = "visible")
     private boolean visible = Boolean.TRUE;
     @Column(name = "view_count")
-    private int viewCount;
+    private Integer viewCount;
 
     @ManyToMany
     @JoinTable(

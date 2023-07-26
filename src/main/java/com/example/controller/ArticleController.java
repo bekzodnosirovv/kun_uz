@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.ArticleDTO;
+import com.example.dto.ArticleFilterDTO;
 import com.example.dto.JwtDTO;
 import com.example.enums.ArticleStatus;
 import com.example.enums.Language;
@@ -75,42 +76,49 @@ public class ArticleController {
     }
 
     @GetMapping(value = "/lastFour/{id}/type")
-    public ResponseEntity<?> getLastFourByType(@PathVariable("id")String articleId,
-                                               @RequestParam("type")Integer typeId) {
-        return ResponseEntity.ok("");
+    public ResponseEntity<?> getLastFourByType(@PathVariable("id") String articleId,
+                                               @RequestParam("type") Integer typeId) {
+        return ResponseEntity.ok(articleService.getLastFourByType(articleId, typeId));
     }
 
-    public ResponseEntity<?> getMostRead4() {
-        return null;
+    @GetMapping(value = "/mostRead")
+    public ResponseEntity<?> getMostReadList() {
+        return ResponseEntity.ok(articleService.getMostReadList());
     }
 
-    public ResponseEntity<?> getLast4ByTagName() {
-        return null;
+    @GetMapping(value = "/tagName")
+    public ResponseEntity<?> getLastByTagNameList(@RequestParam("tag") Integer tagId) {
+        return ResponseEntity.ok(articleService.getByTagName(tagId));
     }
 
-    public ResponseEntity<?> getLast5ByTypeAndRegion() {
-        return null;
+    @GetMapping(value = "/typeAndRegion")
+    public ResponseEntity<?> getLastByTypeAndRegionList(@RequestParam("type") Integer typeId,
+                                                        @RequestParam("region") Integer regionId) {
+        return ResponseEntity.ok(articleService.getByTypeAndRegion(typeId, regionId));
     }
 
-    public ResponseEntity<?> getByRegionPagination() {
-        return null;
+    @GetMapping(value = "/region/{id}")
+    public ResponseEntity<?> getByRegionPagination(@PathVariable("id") Integer regionId,
+                                                   @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                   @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(articleService.getByRegionPagination(regionId, page, size));
     }
 
     @GetMapping(value = "/lastFive/{id}")
-    public ResponseEntity<?> getLastFiveByCategory(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(articleService.getLastFiveByCategory(id));
+    public ResponseEntity<?> getLastFiveByCategory(@PathVariable("id") Integer categoryId) {
+        return ResponseEntity.ok(articleService.getLastFiveByCategory(categoryId));
     }
 
-    @GetMapping(value = "/byCategory/{catId}/page")
-    public ResponseEntity<?> getByCategoryPagination(@PathVariable("catId") Integer catId,
+    @GetMapping(value = "/category/{id}")
+    public ResponseEntity<?> getByCategoryPagination(@PathVariable("id") Integer categoryId,
                                                      @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                      @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(articleService.byCategory(catId, page - 1, size));
+        return ResponseEntity.ok(articleService.getLastFiveByCategory(categoryId, page - 1, size));
     }
 
     @GetMapping(value = "/view/{id}")
-    public ResponseEntity<?> increaseViewCountById(@PathVariable("id") String id) {
-        return ResponseEntity.ok(articleService.increaseViewCountById(id));
+    public ResponseEntity<?> increaseViewCountById(@PathVariable("id") String articleId) {
+        return ResponseEntity.ok(articleService.increaseViewCountById(articleId));
     }
 
     @GetMapping(value = "/shared/{id}")
@@ -119,8 +127,12 @@ public class ArticleController {
     }
 
     @GetMapping(value = "/filter")
-    public ResponseEntity<?> filter() {
-        return null;
+    public ResponseEntity<?> filter(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                    @RequestBody ArticleFilterDTO filterDTO,
+                                    HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.PUBLISHER);
+        return ResponseEntity.ok(articleService.filter(filterDTO,page-1,size));
     }
 
 }

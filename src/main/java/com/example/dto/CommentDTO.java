@@ -1,7 +1,5 @@
 package com.example.dto;
 
-import com.example.entity.ArticleEntity;
-import com.example.entity.ProfileEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "tag")
-public class Tag extends BaseEntity {
+public class TagEntity extends BaseEntity {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 }

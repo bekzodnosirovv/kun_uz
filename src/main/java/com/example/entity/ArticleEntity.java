@@ -75,5 +75,6 @@ public class ArticleEntity extends BaseStringEntity {
     @OneToMany(mappedBy = "article")
     private List<ArticleTypesEntity> articleTypes;
 
-
+    @OneToMany(mappedBy = "article")
+    private List<ArticleTagsEntity> articleTags;
 }

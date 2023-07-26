@@ -51,7 +51,7 @@ public class CommentController {
                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                            HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(commentService.getPagination(page, size));
+        return ResponseEntity.ok(commentService.getPagination(page-1, size));
     }
 
     @GetMapping(value = "/closed/filter")
@@ -60,7 +60,7 @@ public class CommentController {
                                     @RequestBody CommentFilterDTO filterDTO,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(commentService.filter(page, size, filterDTO));
+        return ResponseEntity.ok(commentService.filter(page-1, size, filterDTO));
     }
 
     @GetMapping(value = "/replyList/{id}")

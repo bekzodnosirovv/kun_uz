@@ -20,8 +20,4 @@ public class CategoryDTO {
     private LocalDateTime createdDate;
 
 
-    public CategoryDTO(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 }

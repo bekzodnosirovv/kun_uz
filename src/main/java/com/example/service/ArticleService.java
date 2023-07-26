@@ -31,9 +31,9 @@ public class ArticleService {
     @Autowired
     private ArticleRepository articleRepository;
     @Autowired
-    private ArticleTypeRepository articleTypeRepository;
-    @Autowired
     private ArticleTypesService articleTypesService;
+    @Autowired
+    private CustomRepository customRepository;
 
     public ArticleDTO create(Integer moderatorId, ArticleDTO dto) {
         isValidArticle(dto); // check
@@ -105,7 +105,7 @@ public class ArticleService {
     }
 
     public ArticleDTO getByIdAndLan(String articleId, Language lan) {
-        Optional<ArticleEntity> optional = articleRepository.getByIdAndStatusAndVisibleIsTrue(articleId, ArticleStatus.PUBLISHED);
+        Optional<ArticleEntity> optional = articleRepository.getByIdAndStatusAndVisibleTrue(articleId, ArticleStatus.PUBLISHED);
         if (optional.isEmpty()) return new ArticleDTO();
         // response article full info
         return getFullInfo(optional.get(), lan);
@@ -113,46 +113,71 @@ public class ArticleService {
 
     //  Get Last 4 Article By Types and except given article id
     public List<ArticleDTO> getLastFourByType(String articleId, Integer typeId) {
-        List<ArticleEntity> entityList = articleRepository.getLastFourByType(typeId, ArticleStatus.PUBLISHED, articleId, 4);
+        List<ArticleEntity> entityList = articleRepository.getLastFourByType(typeId, ArticleStatus.PUBLISHED, articleId);
         if (entityList.isEmpty()) return new LinkedList<>();
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
-    public List<ArticleShortInfoDTO> getLastFiveByCategory(Integer catId) {
-//        List<ArticleEntity> entityList=articleRepository.
-        return null;
+    // get 4 most read article
+    public List<ArticleDTO> getMostReadList() {
+        List<ArticleEntity> entityList = articleRepository.getListMostRead(ArticleStatus.PUBLISHED);
+        if (entityList.isEmpty()) return new LinkedList<>();
+        return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
-    public PageImpl<ArticleShortInfoDTO> byCategory(Integer catId, Integer page, Integer size) {
-        CategoryEntity entity = new CategoryEntity();
-        entity.setId(catId);
+    // get 4 by tag name
+    public List<ArticleDTO> getByTagName(Integer tagId) {
+        List<ArticleEntity> entityList = articleRepository.getListByTag(tagId, ArticleStatus.PUBLISHED);
+        if (entityList.isEmpty()) return new LinkedList<>();
+        return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
+    }
+
+    // by type and region
+    public List<ArticleDTO> getByTypeAndRegion(Integer typeId, Integer regionId) {
+        List<ArticleEntity> entityList = articleRepository.getByTypeAndRegion(typeId, regionId, ArticleStatus.PUBLISHED);
+        if (entityList.isEmpty()) return new LinkedList<>();
+        return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
+    }
+
+    // get region id pagination
+    public PageImpl<ArticleDTO> getByRegionPagination(Integer regionId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ArticleShortInfoDTO> dtoList = new LinkedList<>();
-        Page<ArticleEntity> entityPage = articleRepository.findAllByCategoryId(entity, pageable);
-        entityPage.getContent().forEach(entity1 -> {
-            ArticleShortInfoDTO dto = new ArticleShortInfoDTO();
-            dto.setId(entity1.getId());
-            dto.setTitle(entity1.getTitle());
-            dto.setDescription(entity1.getDescription());
-            dto.setImageId(entity1.getImage().getId());
-            dto.setPublishedDate(entity1.getPublishedDate());
-            dto.setImageURL(entity1.getImage().getPath());
-            dtoList.add(dto);
-        });
-
-        return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
+        Page<ArticleEntity> entityPage = articleRepository.findAllByRegionIdAndStatusAndVisibleTrue(regionId, ArticleStatus.PUBLISHED, pageable);
+        return new PageImpl<>(entityPage.getContent().stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList(),
+                pageable, entityPage.getTotalElements());
     }
 
-    public Integer increaseViewCountById(String id) {
-        getById(id);
-        Optional<ArticleEntity> optional = articleRepository.findById(id);
-        return optional.get().getViewCount();
+    // get last 5 by category id
+    public List<ArticleDTO> getLastFiveByCategory(Integer categoryId) {
+        List<ArticleEntity> entityList = articleRepository.getLastFiveByCategory(ArticleStatus.PUBLISHED);
+        if (entityList.isEmpty()) return new LinkedList<>();
+        return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
-    public Integer increaseShareCountById(String id) {
-        getById(id);
-        Optional<ArticleEntity> optional = articleRepository.findById(id);
-        return optional.get().getSharedCount();
+    // get article by category pagination
+    public PageImpl<ArticleDTO> getLastFiveByCategory(Integer categoryId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ArticleEntity> entityPage = articleRepository.findAllByRegionIdAndStatusAndVisibleTrue(categoryId, ArticleStatus.PUBLISHED, pageable);
+        return new PageImpl<>(entityPage.getContent().stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList(),
+                pageable, entityPage.getTotalElements());
+    }
+
+    public Integer increaseViewCountById(String articleId) {
+        ArticleEntity entity = getById(articleId);
+        return entity.getViewCount();
+    }
+
+    public Integer increaseShareCountById(String categoryId) {
+        ArticleEntity entity = getById(categoryId);
+        return entity.getSharedCount();
+    }
+
+    // filter
+    public PageImpl<ArticleDTO> filter(ArticleFilterDTO filterDTO, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        FilterResultDTO<ArticleEntity> resultDTO = customRepository.filterArticle(filterDTO, page, size);
+        return new PageImpl<>(resultDTO.getList().stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList(),
+                pageable, resultDTO.getTotalCount());
     }
 
     // get article full info
@@ -186,6 +211,7 @@ public class ArticleService {
         }
         fullInfo.setCategoryDTO(categoryDTO); // set category
 
+
         // TODO fullInfo set like count and tag list
 
 
@@ -208,24 +234,8 @@ public class ArticleService {
     }
 
     public ArticleEntity getById(String articleId) {
-        return articleRepository.findById(articleId).
+        return articleRepository.findByIdAndStatusAndVisibleTrue(articleId, ArticleStatus.PUBLISHED).
                 orElseThrow(() -> new ItemNotFoundException("Article not found"));
-    }
-
-    public ArticleDTO toDTO(ArticleEntity entity) {
-        ArticleDTO dto = new ArticleDTO();
-        dto.setId(entity.getId());
-        dto.setTitle(entity.getTitle());
-        dto.setDescription(entity.getDescription());
-        dto.setContent(entity.getContent());
-        dto.setStatus(entity.getStatus());
-        dto.setModeratorId(entity.getModerator().getId());
-        dto.setPublisherId(entity.getPublisher().getId());
-        dto.setCreatedDate(entity.getCreatedDate());
-        dto.setPublishedDate(entity.getPublishedDate());
-        dto.setSharedCount(entity.getSharedCount());
-        dto.setViewCount(entity.getViewCount());
-        return dto;
     }
 
     private void isValidArticle(ArticleDTO dto) {

@@ -1,7 +1,9 @@
 package com.example.repository;
 
+import com.example.dto.CommentFilterDTO;
 import com.example.dto.FilterResultDTO;
 import com.example.dto.ProfileFilterDTO;
+import com.example.entity.CommentEntity;
 import com.example.entity.ProfileEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -56,9 +58,50 @@ public class CustomRepository {
         }
 
         return selectQuery.getResultList();
-
     }
 
+    public FilterResultDTO<CommentEntity> filterComment(CommentFilterDTO filterDTO,Integer page,Integer size) {
+        StringBuilder selectQueryBuilder = new StringBuilder("select s from CommentEntity as s where 1=1");
+        StringBuilder countQueryBuilder = new StringBuilder("select count(s) from CommentEntity as s where 1=1");
+        StringBuilder whereQuery = new StringBuilder();
+        Map<String, Object> params = new HashMap<>();
+
+        if (filterDTO.getId() != null) {
+            whereQuery.append(" and s.id =:id");
+            params.put("id", filterDTO.getId());
+        }
+        if (filterDTO.getProfileId() != null) {
+            whereQuery.append(" and s.profileId =:profileId");
+            params.put("profileId", filterDTO.getProfileId());
+        }
+        if (filterDTO.getArticleId() != null) {
+            whereQuery.append(" and s.articleId =:articleId");
+            params.put("articleId", filterDTO.getArticleId());
+        }
+        if (filterDTO.getCreatedDateFrom() != null) {
+            whereQuery.append(" and s.createdDate >=:createdDateFrom");
+            params.put("createdDateFrom", LocalDateTime.of(filterDTO.getCreatedDateFrom(), LocalTime.MIN));
+        }
+        if (filterDTO.getCreatedDateTo() != null) {
+            whereQuery.append(" and s.createdDate <=:createdDateTo");
+            params.put("createdDateTo", LocalDateTime.of(filterDTO.getCreatedDateTo(), LocalTime.MAX));
+        }
+
+        Query selectQuery = entityManager.createQuery(selectQueryBuilder.append(whereQuery).toString());
+        selectQuery.setFirstResult(page * size);
+        selectQuery.setMaxResults(size);
+
+        Query countQuery = entityManager.createQuery(countQueryBuilder.append(whereQuery).toString());
+
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            selectQuery.setParameter(param.getKey(), param.getValue());
+            countQuery.setParameter(param.getKey(), param.getValue());
+        }
+
+        List<CommentEntity> entityList = selectQuery.getResultList();
+        Long totalCount = (Long) countQuery.getSingleResult();
+        return new FilterResultDTO<>(entityList, totalCount);
+    }
 
 
 }

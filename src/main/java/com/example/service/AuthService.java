@@ -22,34 +22,34 @@ public class AuthService {
 
     @Autowired
     private ProfileRepository profileRepository;
+    @Autowired
+    private ProfileService profileService;
 
     public ApiResponseDTO login(AuthDTO authDTO) {
-
-        Optional<ProfileEntity> optional = profileRepository.findByPhone(authDTO.getPhone());
-        if (optional.isEmpty() || !optional.get().getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
+        ProfileEntity profileEntity = profileService.getByPhone(authDTO.getPhone());
+        if (profileEntity == null || !profileEntity.getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
             return new ApiResponseDTO(false, "Login or Password not found");
         }
-        if (optional.get().getStatus().equals(ProfileStatus.ACTIVE) || !optional.get().isVisible()) {
+        if (!profileEntity.getStatus().equals(ProfileStatus.ACTIVE) || !profileEntity.getVisible()) {
             return new ApiResponseDTO(false, "Your status not active. Please contact with support.");
         }
-        ProfileEntity entity = optional.get();
         ProfileDTO response = new ProfileDTO();
-        response.setId(entity.getId());
-        response.setName(entity.getName());
-        response.setSurname(entity.getSurname());
-        response.setRole(entity.getRole());
-        response.setPhone(entity.getPhone());
-        response.setJwt(JWTUtil.encode(entity.getId(), entity.getRole()));
-
+        response.setId(profileEntity.getId());
+        response.setName(profileEntity.getName());
+        response.setSurname(profileEntity.getSurname());
+        response.setRole(profileEntity.getRole());
+        response.setPhone(profileEntity.getPhone());
+        response.setJwt(JWTUtil.encode(profileEntity.getId(), profileEntity.getRole())); // set jwt token
+        // response
         return new ApiResponseDTO(true, response);
     }
 
     public ProfileDTO registration(ProfileDTO dto) {
-        userIsValid(dto);
-        if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
+        userIsValid(dto); // check dto
+        if (profileService.getByEmail(dto.getEmail()) != null) { // check email
             throw new ItemNotFoundException("Email already exists.");
         }
-        if (profileRepository.findByPhone(dto.getPhone()).isPresent()) {
+        if (profileService.getByPhone(dto.getPhone()) != null) { // check phone
             throw new ItemNotFoundException("Phone already exists.");
         }
         ProfileEntity entity = new ProfileEntity();
@@ -60,7 +60,8 @@ public class AuthService {
         entity.setPhone(dto.getPhone());
         entity.setRole(ProfileRole.USER);
         entity.setStatus(ProfileStatus.ACTIVE);
-        profileRepository.save(entity);
+        profileRepository.save(entity); // save
+        // response dto
         dto.setId(entity.getId());
         return dto;
     }

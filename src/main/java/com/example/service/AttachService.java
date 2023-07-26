@@ -183,7 +183,7 @@ public class AttachService {
         return folderName + "/" + pathFolder + "/" + key + "." + extension;
     }
 
-    private AttachEntity get(String fileName) {
+    public AttachEntity get(String fileName) {
         return attachRepository.findById(fileName).orElseThrow(() -> new ItemNotFoundException("File not found"));
     }
 

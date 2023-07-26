@@ -1,10 +1,12 @@
 package com.example.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ApiResponseDTO {
     private boolean status;
     private String message;

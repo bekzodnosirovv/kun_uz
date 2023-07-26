@@ -1,61 +1,79 @@
 package com.example.entity;
 
 import com.example.enums.ArticleStatus;
+import com.example.superEntity.BaseStringEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "article")
-public class ArticleEntity {
+public class ArticleEntity extends BaseStringEntity {
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private String id;
+
     @Column(name = "title", nullable = false)
     private String title;
+
     @Column(columnDefinition = "TEXT")
     private String description;
+
     @Column(columnDefinition = "TEXT")
     private String content;
+
     @Column(name = "shared_count")
-    private Integer sharedCount;
+    private Integer sharedCount = 0;
+
+    @Column(name = "image_id")
+    private String image_id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id", insertable = false, updatable = false)
+    private AttachEntity image;
+
+    @Column(name = "region_id")
+    private Integer regionId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id")
-    private AttachEntity imageId;
+    @JoinColumn(name = "region_id", insertable = false, updatable = false)
+    private RegionEntity region;
+
+    @Column(name = "category_id")
+    private Integer categoryId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id")
-    private RegionEntity regionId;
+    @JoinColumn(name = "category_id",insertable = false,updatable = false)
+    private CategoryEntity category;
+
+    @Column(name = "moderator_id")
+    private Integer moderatorId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private CategoryEntity categoryId;
+    @JoinColumn(name = "moderator_id",insertable = false,updatable = false)
+    private ProfileEntity moderator;
+
+    @Column(name = "publisher_id")
+    private Integer publisherId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "moderator_id")
-    private ProfileEntity moderatorId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publisher_id")
-    private ProfileEntity publisherId;
+    @JoinColumn(name = "publisher_id",insertable = false,updatable = false)
+    private ProfileEntity publisher;
+
     @Enumerated(value = EnumType.STRING)
     private ArticleStatus status;
-    @Column(name = "created_date")
-    private LocalDateTime createdDate = LocalDateTime.now();
+
     @Column(name = "published_date")
     private LocalDateTime publishedDate;
-    @Column(name = "visible")
-    private boolean visible = Boolean.TRUE;
-    @Column(name = "view_count")
-    private Integer viewCount;
 
-    @ManyToMany
-    @JoinTable(
-            name = "article_types",
-            joinColumns = @JoinColumn(name = "article_id"),
-            inverseJoinColumns = @JoinColumn(name = "article_type_id")
-    )
-    private List<ArticleTypeEntity> articleTypes;
+    @Column(name = "view_count")
+    private Integer viewCount = 0;
+
+    @OneToMany(mappedBy = "article")
+    private List<ArticleTypesEntity> articleTypes;
+
+
 }

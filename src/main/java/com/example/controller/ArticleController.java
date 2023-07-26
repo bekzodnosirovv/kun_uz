@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dto.ArticleDTO;
 import com.example.dto.JwtDTO;
 import com.example.enums.ArticleStatus;
+import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.ArticleService;
 import com.example.util.SecurityUtil;
@@ -43,12 +44,13 @@ public class ArticleController {
         return ResponseEntity.ok("Article deleted !!!");
     }
 
-    @PutMapping(value = "/closed/changeStatus/{id}")
+    @PutMapping(value = "/closed/publish/{id}/status")
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id,
                                           @RequestParam("status") ArticleStatus status,
                                           HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.PUBLISHER);
-        return ResponseEntity.ok(articleService.changeStatus(id, jwtDTO.getId(), status));
+        articleService.changeStatus(id, jwtDTO.getId(), status);
+        return ResponseEntity.ok("Update article status");
     }
 
     @GetMapping(value = "/lastFive")
@@ -66,14 +68,16 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getLastEight(list));
     }
 
-    @GetMapping(value = "/byIdAndLan")
-    public ResponseEntity<?> getByIdAndLang() {
-        return null;
+    @GetMapping(value = "/{id}/lan")
+    public ResponseEntity<?> getByIdAndLang(@PathVariable("id") String articleId,
+                                            @RequestParam("lan") Language lan) {
+        return ResponseEntity.ok(articleService.getByIdAndLan(articleId, lan));
     }
 
-    @GetMapping(value = "/lastFour")
-    public ResponseEntity<?> getLastFourByType() {
-        return null;
+    @GetMapping(value = "/lastFour/{id}/type")
+    public ResponseEntity<?> getLastFourByType(@PathVariable("id")String articleId,
+                                               @RequestParam("type")Integer typeId) {
+        return ResponseEntity.ok("");
     }
 
     public ResponseEntity<?> getMostRead4() {
@@ -92,15 +96,16 @@ public class ArticleController {
         return null;
     }
 
-    public ResponseEntity<?> getLast5ByCategory() {
-        return null;
+    @GetMapping(value = "/lastFive/{id}")
+    public ResponseEntity<?> getLastFiveByCategory(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(articleService.getLastFiveByCategory(id));
     }
 
     @GetMapping(value = "/byCategory/{catId}/page")
     public ResponseEntity<?> getByCategoryPagination(@PathVariable("catId") Integer catId,
                                                      @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                      @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(articleService.byCategory(catId,page-1,size));
+        return ResponseEntity.ok(articleService.byCategory(catId, page - 1, size));
     }
 
     @GetMapping(value = "/view/{id}")

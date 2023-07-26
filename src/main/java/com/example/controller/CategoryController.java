@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.CategoryDTO;
+import com.example.dto.JwtDTO;
 import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.CategoryService;
@@ -19,15 +20,15 @@ public class CategoryController {
     @PostMapping("/admin")
     public ResponseEntity<?> create(@RequestBody CategoryDTO dto,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(categoryService.create(dto));
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        return ResponseEntity.ok(categoryService.create(jwtDTO.getId(),dto));
     }
 
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @RequestBody CategoryDTO dto,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request,ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         categoryService.update(id, dto);
         return ResponseEntity.ok("Category update !!!");
     }
@@ -35,14 +36,14 @@ public class CategoryController {
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request,ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         categoryService.delete(id);
         return ResponseEntity.ok("Category deleted !!!");
     }
 
     @GetMapping("/admin/all")
     public ResponseEntity<?> getAll(HttpServletRequest request) {
-        SecurityUtil.hasRole(request,ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(categoryService.getAll());
     }
 

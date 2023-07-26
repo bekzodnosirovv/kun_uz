@@ -3,9 +3,9 @@ package com.example.service;
 import com.example.dto.ProfileDTO;
 import com.example.dto.ProfileFilterDTO;
 import com.example.entity.ProfileEntity;
-import com.example.enums.ProfileRole;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
+import com.example.repository.AttachRepository;
 import com.example.repository.CustomRepository;
 import com.example.repository.ProfileRepository;
 import com.example.util.MD5Util;
@@ -18,9 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProfileService {
@@ -29,18 +27,18 @@ public class ProfileService {
     private ProfileRepository profileRepository;
     @Autowired
     private CustomRepository customRepository;
+    @Autowired
+    private AttachRepository attachRepository;
 
 
-    public ProfileDTO create(Integer pnId, ProfileDTO dto) {
-
-        isValidProfile(dto);
-        if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
+    public ProfileDTO create(Integer prtId, ProfileDTO dto) {
+        isValidProfile(dto);       // check
+        if (getByPhone(dto.getPhone()) != null) {         // check phone
             throw new ItemNotFoundException("Email already exists.");
         }
-        if (profileRepository.findByPhone(dto.getPhone()).isPresent()) {
+        if (getByEmail(dto.getEmail()) != null) {         // check email
             throw new ItemNotFoundException("Phone already exists.");
         }
-
         ProfileEntity entity = new ProfileEntity();
         entity.setName(dto.getName());
         entity.setSurname(dto.getSurname());
@@ -48,36 +46,32 @@ public class ProfileService {
         entity.setPhone(dto.getPhone());
         entity.setPassword(MD5Util.encode(dto.getPassword()));
         entity.setRole(dto.getRole());
-        entity.setPnId(pnId);
+        entity.setPrtId(prtId);
         entity.setStatus(dto.getStatus());
-
-        profileRepository.save(entity);
+        profileRepository.save(entity);  // Profile save data base
+        // response
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());
-
         return dto;
     }
 
-    public void update(Integer id, ProfileDTO dto) {
-        getById(id);
-        ProfileEntity entity = profileRepository.findById(id).get();
-        if (dto.getName() != null) entity.setName(dto.getName());
-        if (dto.getSurname() != null) entity.setSurname(dto.getSurname());
-        if (dto.getVisible() != null) entity.setVisible(dto.getVisible());
-        if (dto.getPassword() != null) entity.setPassword(MD5Util.encode(dto.getPassword()));
-        if (dto.getStatus() != null) entity.setStatus(dto.getStatus());
-        if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
-        if (dto.getRole() != null) entity.setRole(dto.getRole());
-
-        profileRepository.save(entity);
+    public void update(Integer profileId, ProfileDTO dto) {
+        // TODO check ?
+        ProfileEntity entity = getById(profileId);
+        entity.setName(dto.getName());
+        entity.setSurname(dto.getSurname());
+        entity.setVisible(dto.getVisible());
+        entity.setPassword(MD5Util.encode(dto.getPassword()));
+        entity.setStatus(dto.getStatus());
+        entity.setEmail(dto.getEmail());
+        entity.setRole(dto.getRole());
+        profileRepository.save(entity); //  update
     }
 
-    public void updateProfileDetail(Integer id, ProfileDTO dto) {
-        ProfileDTO updateProfile = getById(id);
-        if (dto.getName() != null) updateProfile.setName(dto.getName());
-        if (dto.getSurname() != null) updateProfile.setSurname(dto.getSurname());
-        profileRepository.updateDetail(id, updateProfile.getName(), updateProfile.getSurname());
-
+    public void updateProfileDetail(Integer profileId, ProfileDTO dto) {
+        // TODO check ?
+        getById(profileId); // check profile
+        profileRepository.updateDetail(profileId, dto.getName(), dto.getSurname());
     }
 
     public PageImpl<ProfileDTO> getAll(Integer page, Integer size) {
@@ -86,12 +80,16 @@ public class ProfileService {
         return new PageImpl<>(entityPage.getContent().stream().map(this::toDTO).toList(), pageable, entityPage.getTotalElements());
     }
 
-    public void delete(Integer id) {
-        getById(id);
-        profileRepository.deletedById(id);
+    public void delete(Integer profileId) {
+        getById(profileId); // check
+        profileRepository.deletedById(profileId); // update visible
     }
 
-    public void updatePhoto() {
+    public void updatePhoto(Integer profileId, String imageId) {
+        if (attachRepository.findById(imageId).isPresent()) {
+            throw new ItemNotFoundException("Image not upload");
+        }
+        profileRepository.updatePhoto(profileId, imageId); // update photo
     }
 
     public List<ProfileDTO> filter(ProfileFilterDTO filterDTO) {
@@ -99,10 +97,17 @@ public class ProfileService {
         return list.stream().map(this::toDTO).toList();
     }
 
-    public ProfileDTO getById(Integer id) {
-        Optional<ProfileEntity> optional = profileRepository.findById(id);
-        if (optional.isEmpty()) throw new ItemNotFoundException("Profile not found.");
-        return toDTO(optional.get());
+    public ProfileEntity getById(Integer id) {
+        return profileRepository.findById(id).
+                orElseThrow(() -> new ItemNotFoundException("Profile not found"));
+    }
+
+    public ProfileEntity getByPhone(String phone) {
+        return profileRepository.findByPhone(phone).orElse(null);
+    }
+
+    public ProfileEntity getByEmail(String email) {
+        return profileRepository.findByEmail(email).orElse(null);
     }
 
     private ProfileDTO toDTO(ProfileEntity entity) {
@@ -113,7 +118,7 @@ public class ProfileService {
         dto.setEmail(entity.getEmail());
         dto.setPhone(entity.getPhone());
         dto.setRole(entity.getRole());
-        dto.setVisible(entity.isVisible());
+        dto.setVisible(entity.getVisible());
         dto.setStatus(entity.getStatus());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
@@ -121,34 +126,29 @@ public class ProfileService {
 
     private void isValidProfile(ProfileDTO dto) {
         if (dto.getName() == null || dto.getName().isBlank()) {
-            throw new AppBadRequestException("Name required.");
+            throw new AppBadRequestException("Name required");
         }
         if (dto.getSurname() == null || dto.getSurname().isBlank()) {
-            throw new AppBadRequestException("Surname required.");
+            throw new AppBadRequestException("Surname required");
         }
         if (dto.getEmail() == null || dto.getEmail().isBlank()) {
-            throw new AppBadRequestException("Email not found.");
+            throw new AppBadRequestException("Email required");
         }
         if (dto.getPhone() == null || dto.getPhone().isBlank()) {
-            throw new AppBadRequestException("Phone required.");
+            throw new AppBadRequestException("Phone required");
         }
         if (!PhoneIsValidUtil.checkPhone(dto.getPhone())) {
-            throw new AppBadRequestException("Phone number is invalid.");
+            throw new AppBadRequestException("Phone number is invalid");
         }
         if (dto.getPassword() == null || dto.getPassword().isBlank()) {
-            throw new AppBadRequestException("Password required.");
+            throw new AppBadRequestException("Password required");
         }
         if (dto.getRole() == null) {
-            throw new AppBadRequestException("Profile role required.");
-        }
-        if (Arrays.stream(ProfileRole.values()).noneMatch(t -> t.equals(dto.getRole()))) {
-            throw new AppBadRequestException("Profile role not found.");
+            throw new AppBadRequestException("Profile role required");
         }
         if (dto.getStatus() == null) {
             throw new AppBadRequestException("Status required");
         }
-
-
     }
 
 

@@ -2,18 +2,17 @@ package com.example.entity;
 
 import com.example.enums.ProfileRole;
 import com.example.enums.ProfileStatus;
+import com.example.superEntity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
-
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "profile")
-public class ProfileEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class ProfileEntity extends BaseEntity {
+
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "surname", nullable = false)
@@ -30,14 +29,12 @@ public class ProfileEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false)
     private ProfileRole role;
-    @Column(name = "visible", nullable = false)
-    private boolean visible = Boolean.TRUE;
-    @Column(name = "created_date", nullable = false)
-    private LocalDateTime createdDate = LocalDateTime.now();
-    @Column(name = "pnId")
-    private Integer pnId;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "photo_id")
-//    private AttachEntity photoId;
+    @Column(name = "prtId")
+    private Integer prtId;
+    @Column(name = "image_id")
+    private String image_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id", insertable = false, updatable = false)
+    private AttachEntity image;
 
 }

@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.ArticleTypeDTO;
+import com.example.dto.JwtDTO;
 import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.ArticleTypeService;
@@ -16,14 +17,14 @@ public class ArticleTypeController {
     @Autowired
     private ArticleTypeService articleTypeService;
 
-    @PostMapping("/admin")
+    @PostMapping(value = "/admin")
     public ResponseEntity<?> create(@RequestBody ArticleTypeDTO dto,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(articleTypeService.create(dto));
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        return ResponseEntity.ok(articleTypeService.create(jwtDTO.getId(),dto));
     }
 
-    @PutMapping("/admin/{id}")
+    @PutMapping(value = "/admin/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @RequestBody ArticleTypeDTO dto,
                                     HttpServletRequest request) {
@@ -32,7 +33,7 @@ public class ArticleTypeController {
         return ResponseEntity.ok("Article type update !!!");
     }
 
-    @DeleteMapping("/admin/{id}")
+    @DeleteMapping(value = "/admin/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
@@ -40,7 +41,7 @@ public class ArticleTypeController {
         return ResponseEntity.ok("Article type deleted !!!");
     }
 
-    @GetMapping("/admin/all/page")
+    @GetMapping(value = "/admin/all/page")
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                     HttpServletRequest request) {
@@ -48,7 +49,7 @@ public class ArticleTypeController {
         return ResponseEntity.ok(articleTypeService.getAll(page - 1, size));
     }
 
-    @GetMapping("/lan")
+    @GetMapping(value = "/lan")
     public ResponseEntity<?> getByLan(@RequestParam("lan") Language lan) {
         return ResponseEntity.ok(articleTypeService.getByLan(lan));
     }

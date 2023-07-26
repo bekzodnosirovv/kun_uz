@@ -1,11 +1,12 @@
 package com.example.service;
 
-import com.example.dto.ArticleDTO;
-import com.example.dto.ArticleShortInfoDTO;
+import com.example.dto.*;
 import com.example.entity.*;
 import com.example.enums.ArticleStatus;
+import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
+import com.example.mapper.ArticleShortMapper;
 import com.example.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,83 +23,104 @@ import java.util.Optional;
 @Service
 public class ArticleService {
     @Autowired
-    private RegionRepository regionRepository;
+    private RegionService regionService;
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
     @Autowired
-    private AttachRepository attachRepository;
+    private AttachService attachService;
     @Autowired
     private ArticleRepository articleRepository;
     @Autowired
     private ArticleTypeRepository articleTypeRepository;
+    @Autowired
+    private ArticleTypesService articleTypesService;
 
-    public ArticleDTO create(Integer id, ArticleDTO dto) {
-        isValidArticle(dto);
-
+    public ArticleDTO create(Integer moderatorId, ArticleDTO dto) {
+        isValidArticle(dto); // check
         ArticleEntity entity = new ArticleEntity();
         entity.setTitle(dto.getTitle());
-
-        if (dto.getDescription() == null) {
-            entity.setDescription(dto.getContent().substring(dto.getContent().indexOf(".") + 1));
-        } else entity.setDescription(dto.getDescription());
-
+        entity.setDescription(dto.getDescription());
         entity.setContent(dto.getContent());
-
-        if (dto.getSharedCount() == null) entity.setSharedCount(0);
-        else entity.setSharedCount(dto.getSharedCount());
-
-        if (dto.getImageId() != null) {
-            Optional<AttachEntity> optionalAttach = attachRepository.findById(dto.getImageId());
-            optionalAttach.ifPresent(entity::setImageId);
-        }
-        if (dto.getRegionId() != null) {
-            Optional<RegionEntity> optionalRegion = regionRepository.findById(dto.getRegionId());
-            optionalRegion.ifPresent(entity::setRegionId);
-        }
-        if (dto.getCategoryId() != null) {
-            Optional<CategoryEntity> optionalCategory = categoryRepository.findById(dto.getCategoryId());
-            optionalCategory.ifPresent(entity::setCategoryId);
-        }
-
-        ProfileEntity profileEntity = new ProfileEntity();
-        profileEntity.setId(id);
-        entity.setModeratorId(profileEntity);
+        entity.setImage_id(dto.getImageId());
+        entity.setCategoryId(dto.getCategoryId());
+        entity.setRegionId(dto.getRegionId());
+        entity.setModeratorId(moderatorId);
         entity.setStatus(ArticleStatus.NOT_PUBLISHED);
-
-        articleRepository.save(entity);
+        articleRepository.save(entity); // save
+        articleTypesService.create(entity.getId(), dto.getArticleTypes()); // save types
+        // response dto
         dto.setId(entity.getId());
-
         return dto;
     }
 
-    public void update(String articleId, ArticleDTO dto, Integer profileId) {
-
+    public void update(String articleId, ArticleDTO dto, Integer moderatorId) {
+        isValidArticle(dto);  // TODO checking ?
+        ArticleEntity entity = getById(articleId);
+        entity.setTitle(dto.getTitle());
+        entity.setDescription(dto.getDescription());
+        entity.setContent(dto.getContent());
+        entity.setImage_id(dto.getImageId());
+        entity.setCategoryId(dto.getCategoryId());
+        entity.setRegionId(dto.getRegionId());
+        entity.setModeratorId(moderatorId);
+        entity.setStatus(ArticleStatus.NOT_PUBLISHED);
+        articleRepository.save(entity); // update
+        articleTypesService.merge(entity.getId(), dto.getArticleTypes()); // save types
     }
 
     public void delete(String articleId) {
-        getById(articleId);
-        articleRepository.deletedById(articleId);
+        getById(articleId); // check
+        articleRepository.deletedById(articleId); // update visible
     }
 
-    public ArticleDTO changeStatus(String articleId, Integer profileId, ArticleStatus status) {
-        getById(articleId);
-        ProfileEntity entity = new ProfileEntity();
-        entity.setId(profileId);
-        articleRepository.changeStatus(articleId, status, LocalDateTime.now(), entity);
-        Optional<ArticleEntity> articleEntity = articleRepository.findById(articleId);
-        return toDTO(articleEntity.get());
+
+    public void changeStatus(String articleId, Integer publisherId, ArticleStatus status) {
+        getById(articleId); // check article
+        articleRepository.changeStatus(articleId, status, LocalDateTime.now(), publisherId); // update status
     }
 
-    public List<ArticleShortInfoDTO> getLastFiveByType(Integer id) {
-        return articleRepository.getListByType(id, 5);
+    // get article 5 by type
+    public List<ArticleDTO> getLastFiveByType(Integer typeId) {
+        List<ArticleEntity> entityList = articleRepository.getListByType(typeId, 5, ArticleStatus.PUBLISHED);
+        if (entityList.isEmpty()) return new LinkedList<>();
+        // response article short info
+        return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
-    public List<ArticleShortInfoDTO> getLastThreeByType(Integer id) {
-        return articleRepository.getListByType(id, 3);
+    // get article 3 by type
+    public List<ArticleDTO> getLastThreeByType(Integer typeId) {
+        List<ArticleEntity> entityList = articleRepository.getListByType(typeId, 3, ArticleStatus.PUBLISHED);
+        if (entityList.isEmpty()) return new LinkedList<>();
+        // response article short info
+        return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
-    public List<ArticleShortInfoDTO> getLastEight(List<String> list) {
-        return articleRepository.getEightList(list);
+    // get article 8
+    public List<ArticleDTO> getLastEight(List<String> list) {
+        List<ArticleShortMapper> shortMappers = articleRepository.getEightList(ArticleStatus.PUBLISHED, list);
+        if (shortMappers.isEmpty()) return new LinkedList<>();
+        // response article short info
+        return shortMappers.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImageId(), e.getPublishedDate())).toList();
+
+    }
+
+    public ArticleDTO getByIdAndLan(String articleId, Language lan) {
+        Optional<ArticleEntity> optional = articleRepository.getByIdAndStatusAndVisibleIsTrue(articleId, ArticleStatus.PUBLISHED);
+        if (optional.isEmpty()) return new ArticleDTO();
+        // response article full info
+        return getFullInfo(optional.get(), lan);
+    }
+
+    //  Get Last 4 Article By Types and except given article id
+    public List<ArticleDTO> getLastFourByType(String articleId, Integer typeId) {
+        List<ArticleEntity> entityList = articleRepository.getLastFourByType(typeId, ArticleStatus.PUBLISHED, articleId, 4);
+        if (entityList.isEmpty()) return new LinkedList<>();
+        return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
+    }
+
+    public List<ArticleShortInfoDTO> getLastFiveByCategory(Integer catId) {
+//        List<ArticleEntity> entityList=articleRepository.
+        return null;
     }
 
     public PageImpl<ArticleShortInfoDTO> byCategory(Integer catId, Integer page, Integer size) {
@@ -112,9 +134,9 @@ public class ArticleService {
             dto.setId(entity1.getId());
             dto.setTitle(entity1.getTitle());
             dto.setDescription(entity1.getDescription());
-            dto.setImageId(entity1.getImageId().getId());
+            dto.setImageId(entity1.getImage().getId());
             dto.setPublishedDate(entity1.getPublishedDate());
-            dto.setImageURL(entity1.getImageId().getPath());
+            dto.setImageURL(entity1.getImage().getPath());
             dtoList.add(dto);
         });
 
@@ -133,9 +155,61 @@ public class ArticleService {
         return optional.get().getSharedCount();
     }
 
-    public void getById(String id) {
-        Optional<ArticleEntity> optional = articleRepository.findById(id);
-        if (optional.isEmpty()) throw new ItemNotFoundException("Article not found");
+    // get article full info
+    public ArticleDTO getFullInfo(ArticleEntity entity, Language lan) {
+        ArticleDTO fullInfo = new ArticleDTO();
+        fullInfo.setId(entity.getId());
+        fullInfo.setTitle(entity.getTitle());
+        fullInfo.setDescription(entity.getDescription());
+        fullInfo.setContent(entity.getContent());
+        fullInfo.setSharedCount(entity.getSharedCount());
+        fullInfo.setPublishedDate(entity.getPublishedDate());
+        fullInfo.setViewCount(entity.getViewCount());
+        // get region
+        RegionEntity region = regionService.getById(entity.getRegionId());
+        RegionDTO regionDTO = new RegionDTO();
+        regionDTO.setId(region.getId());
+        switch (lan) {
+            case en -> regionDTO.setName(region.getNameEn());
+            case ru -> regionDTO.setName(region.getNameRu());
+            default -> regionDTO.setName(region.getNameUz());
+        }
+        fullInfo.setRegionDTO(regionDTO); // set region
+        // get category
+        CategoryEntity category = categoryService.getById(entity.getCategoryId());
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setId(category.getId());
+        switch (lan) {
+            case en -> categoryDTO.setName(category.getNameEn());
+            case ru -> categoryDTO.setName(category.getNameRu());
+            default -> categoryDTO.setName(category.getNameUz());
+        }
+        fullInfo.setCategoryDTO(categoryDTO); // set category
+
+        // TODO fullInfo set like count and tag list
+
+
+        return fullInfo;
+    }
+
+    // get article short info
+    public ArticleDTO getShortInfo(String articleId, String title, String description, String imageId, LocalDateTime publishDate) {
+        ArticleDTO shortInfo = new ArticleDTO();
+        shortInfo.setId(articleId);
+        shortInfo.setTitle(title);
+        shortInfo.setDescription(description);
+        shortInfo.setPublishedDate(publishDate);
+        // get attach
+        AttachEntity attachEntity = attachService.get(imageId);
+        // create path
+        String path = attachEntity.getPath() + attachEntity.getId() + attachEntity.getExtension();
+        shortInfo.setAttachDTO(new AttachDTO(attachEntity.getId(), path));
+        return shortInfo;
+    }
+
+    public ArticleEntity getById(String articleId) {
+        return articleRepository.findById(articleId).
+                orElseThrow(() -> new ItemNotFoundException("Article not found"));
     }
 
     public ArticleDTO toDTO(ArticleEntity entity) {
@@ -145,8 +219,8 @@ public class ArticleService {
         dto.setDescription(entity.getDescription());
         dto.setContent(entity.getContent());
         dto.setStatus(entity.getStatus());
-        dto.setModeratorId(entity.getModeratorId().getId());
-        dto.setPublisherId(entity.getPublisherId().getId());
+        dto.setModeratorId(entity.getModerator().getId());
+        dto.setPublisherId(entity.getPublisher().getId());
         dto.setCreatedDate(entity.getCreatedDate());
         dto.setPublishedDate(entity.getPublishedDate());
         dto.setSharedCount(entity.getSharedCount());
@@ -156,7 +230,12 @@ public class ArticleService {
 
     private void isValidArticle(ArticleDTO dto) {
         if (dto.getTitle() == null) throw new AppBadRequestException("Title required");
+        if (dto.getDescription() == null) throw new AppBadRequestException("Description required");
         if (dto.getContent() == null) throw new AppBadRequestException("Content required");
+        if (dto.getImageId() == null) throw new AppBadRequestException("Image required");
+        if (dto.getRegionId() == null) throw new AppBadRequestException("Region required");
+        if (dto.getCategoryId() == null) throw new AppBadRequestException("Category required");
+        if (dto.getArticleTypes() == null) throw new AppBadRequestException("Article type required");
     }
 
 }

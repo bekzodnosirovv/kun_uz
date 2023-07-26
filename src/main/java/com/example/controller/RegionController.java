@@ -21,8 +21,8 @@ public class RegionController {
     @PostMapping("/admin")
     public ResponseEntity<?> create(@RequestBody RegionDTO dto,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(regionService.create(dto));
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        return ResponseEntity.ok(regionService.create(jwtDTO.getId(), dto));
     }
 
     @PutMapping("/admin/{id}")

@@ -20,32 +20,33 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public CategoryDTO create(CategoryDTO dto) {
-        isValidCategory(dto);
+    public CategoryDTO create(Integer prtId, CategoryDTO dto) {
+        isValidCategory(dto); // check
         CategoryEntity entity = new CategoryEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
         entity.setNameRu(dto.getNameRu());
         entity.setNameEn(dto.getNameEn());
-        categoryRepository.save(entity);
+        entity.setPrtId(prtId);
+        categoryRepository.save(entity); // save
+        // response
         dto.setId(entity.getId());
         return dto;
-
     }
 
     public void update(Integer id, CategoryDTO dto) {
-        getById(id);
-        CategoryEntity entity = categoryRepository.findById(id).get();
-        if (dto.getOrderNumber() != null) entity.setOrderNumber(dto.getOrderNumber());
-        if (dto.getNameUz() != null) entity.setNameUz(dto.getNameUz());
-        if (dto.getNameEn() != null) entity.setNameEn(dto.getNameEn());
-        if (dto.getNameRu() != null) entity.setNameRu(dto.getNameRu());
-        categoryRepository.save(entity);
+        isValidCategory(dto); // TODO check ?
+        CategoryEntity entity = getById(id);
+        entity.setOrderNumber(dto.getOrderNumber());
+        entity.setNameUz(dto.getNameUz());
+        entity.setNameEn(dto.getNameEn());
+        entity.setNameRu(dto.getNameRu());
+        categoryRepository.save(entity); // update
     }
 
     public void delete(Integer id) {
-        getById(id);
-        categoryRepository.deletedById(id);
+        getById(id); // check
+        categoryRepository.deletedById(id); // update visible
     }
 
     public List<CategoryDTO> getAll() {
@@ -54,9 +55,7 @@ public class CategoryService {
         entities.forEach(r -> {
             dtoList.add(toDTO(r));
         });
-        if (dtoList.isEmpty()) throw new ItemNotFoundException("Category not found.");
-        return dtoList;
-
+        return dtoList; // response list
     }
 
     public List<CategoryDTO> getByLan(Language lan) {
@@ -67,20 +66,18 @@ public class CategoryService {
             dto.setId(entity.getId());
             dto.setOrderNumber(entity.getOrderNumber());
             switch (lan) {
-                case uz -> dto.setName(entity.getNameUz());
                 case en -> dto.setName(entity.getNameEn());
                 case ru -> dto.setName(entity.getNameRu());
+                default -> dto.setName(entity.getNameUz());
             }
             dtoList.add(dto);
         });
-        if (dtoList.isEmpty()) throw new ItemNotFoundException("Category not found.");
-        return dtoList;
-
+        return dtoList; // response list
     }
 
-    public void getById(Integer id) {
-        Optional<CategoryEntity> entity = categoryRepository.findById(id);
-        if (entity.isEmpty()) throw new ItemNotFoundException("Category not found.");
+    public CategoryEntity getById(Integer id) {
+        return categoryRepository.findById(id).
+                orElseThrow(() -> new ItemNotFoundException("Category not found."));
     }
 
     private CategoryDTO toDTO(CategoryEntity entity) {
@@ -90,14 +87,15 @@ public class CategoryService {
         dto.setNameUz(entity.getNameUz());
         dto.setNameEn(entity.getNameEn());
         dto.setNameRu(entity.getNameRu());
-        dto.setVisible(entity.isVisible());
+        dto.setVisible(entity.getVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
-
     }
 
     private void isValidCategory(CategoryDTO dto) {
         if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
-
+        if (dto.getNameUz() == null) throw new AppBadRequestException("Name uz required");
+        if (dto.getNameEn() == null) throw new AppBadRequestException("Name en required");
+        if (dto.getNameRu() == null) throw new AppBadRequestException("Name ru required");
     }
 }

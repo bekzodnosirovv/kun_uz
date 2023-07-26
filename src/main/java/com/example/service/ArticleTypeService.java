@@ -7,6 +7,7 @@ import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.ArticleTypeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -16,33 +17,36 @@ import java.util.Optional;
 
 @Service
 public class ArticleTypeService {
+    @Autowired
     private ArticleTypeRepository articleTypeRepository;
 
-    public ArticleTypeDTO create(ArticleTypeDTO dto) {
-        isValidArticleType(dto);
+    public ArticleTypeDTO create(Integer prtId, ArticleTypeDTO dto) {
+        isValidArticleType(dto); // check
         ArticleTypeEntity entity = new ArticleTypeEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
         entity.setNameRu(dto.getNameRu());
         entity.setNameEn(dto.getNameEn());
-        articleTypeRepository.save(entity);
+        entity.setPrtId(prtId);
+        articleTypeRepository.save(entity); // save
+        // response
         dto.setId(entity.getId());
         return dto;
     }
 
-    public void update(Integer id, ArticleTypeDTO dto) {
-        getById(id);
-        ArticleTypeEntity entity = articleTypeRepository.findById(id).get();
-        if (dto.getOrderNumber() != null) entity.setOrderNumber(dto.getOrderNumber());
-        if (dto.getNameUz() != null) entity.setNameUz(dto.getNameUz());
-        if (dto.getNameEn() != null) entity.setNameEn(dto.getNameEn());
-        if (dto.getNameRu() != null) entity.setNameRu(dto.getNameRu());
-        articleTypeRepository.save(entity);
+    public void update(Integer typeId, ArticleTypeDTO dto) {
+        isValidArticleType(dto); // TODO check ?
+        ArticleTypeEntity entity = getById(typeId);
+        entity.setOrderNumber(dto.getOrderNumber());
+        entity.setNameUz(dto.getNameUz());
+        entity.setNameEn(dto.getNameEn());
+        entity.setNameRu(dto.getNameRu());
+        articleTypeRepository.save(entity); // update
     }
 
-    public void delete(Integer id) {
-        getById(id);
-        articleTypeRepository.deletedById(id);
+    public void delete(Integer typeId) {
+        getById(typeId); // check
+        articleTypeRepository.deletedById(typeId); // update visible
     }
 
     public PageImpl<ArticleTypeDTO> getAll(Integer page, Integer size) {
@@ -59,21 +63,20 @@ public class ArticleTypeService {
             dto.setId(entity.getId());
             dto.setOrderNumber(entity.getOrderNumber());
             switch (lan) {
-                case uz -> dto.setName(entity.getNameUz());
                 case en -> dto.setName(entity.getNameEn());
                 case ru -> dto.setName(entity.getNameRu());
+                default -> dto.setName(entity.getNameUz());
             }
             dtoList.add(dto);
         });
-        if (dtoList.isEmpty()) throw new ItemNotFoundException("Article type not found.");
+        // response
         return dtoList;
     }
 
-    public void getById(Integer id) {
-        Optional<ArticleTypeEntity> entity = articleTypeRepository.findById(id);
-        if (entity.isEmpty()) throw new ItemNotFoundException("Article type not found.");
+    public ArticleTypeEntity getById(Integer typeId) {
+        return articleTypeRepository.findById(typeId).
+                orElseThrow(() -> new ItemNotFoundException("Article type not found."));
     }
-
 
     private ArticleTypeDTO toDTO(ArticleTypeEntity entity) {
         ArticleTypeDTO dto = new ArticleTypeDTO();
@@ -82,14 +85,16 @@ public class ArticleTypeService {
         dto.setNameUz(entity.getNameUz());
         dto.setNameEn(entity.getNameEn());
         dto.setNameRu(entity.getNameRu());
-        dto.setVisible(entity.isVisible());
+        dto.setVisible(entity.getVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
-
     }
 
     private void isValidArticleType(ArticleTypeDTO dto) {
         if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
+        if (dto.getNameUz() == null) throw new AppBadRequestException("Name uz required");
+        if (dto.getNameEn() == null) throw new AppBadRequestException("Name en required");
+        if (dto.getNameRu() == null) throw new AppBadRequestException("Name ru required");
 
     }
 }

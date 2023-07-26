@@ -19,41 +19,41 @@ public class RegionService {
     @Autowired
     private RegionRepository regionRepository;
 
-    public RegionDTO create(RegionDTO dto) {
-        isValidRegion(dto);
+    public RegionDTO create(Integer prtId, RegionDTO dto) {
+        isValidRegion(dto); // check
         RegionEntity entity = new RegionEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
         entity.setNameRu(dto.getNameRu());
         entity.setNameEn(dto.getNameEn());
-        regionRepository.save(entity);
+        entity.setPrtId(prtId);
+        regionRepository.save(entity); // save
         dto.setId(entity.getId());
         return dto;
     }
 
-    public void update(Integer id, RegionDTO dto) {
-        getById(id);
-        RegionEntity entity = regionRepository.findById(id).get();
-        if (dto.getOrderNumber() != null) entity.setOrderNumber(dto.getOrderNumber());
-        if (dto.getNameUz() != null) entity.setNameUz(dto.getNameUz());
-        if (dto.getNameEn() != null) entity.setNameEn(dto.getNameEn());
-        if (dto.getNameRu() != null) entity.setNameRu(dto.getNameRu());
-        regionRepository.save(entity);
+    public void update(Integer regionId, RegionDTO dto) {
+        isValidRegion(dto);  // TODO check ?
+        RegionEntity entity = getById(regionId);
+        entity.setOrderNumber(dto.getOrderNumber());
+        entity.setNameUz(dto.getNameUz());
+        entity.setNameEn(dto.getNameEn());
+        entity.setNameRu(dto.getNameRu());
+        regionRepository.save(entity); // update
     }
 
-    public void delete(Integer id) {
-        getById(id);
-        regionRepository.deletedById(id);
+    public void delete(Integer regionId) {
+        getById(regionId); // check
+        regionRepository.deletedById(regionId); // update visible
     }
 
     public List<RegionDTO> getAll() {
         Iterable<RegionEntity> entities = regionRepository.findAll(Sort.by("orderNumber").descending());
         List<RegionDTO> dtoList = new LinkedList<>();
-        entities.forEach(r -> {
-            dtoList.add(toDTO(r));
+        entities.forEach(entity -> {
+            dtoList.add(toDTO(entity));
         });
-        if (dtoList.isEmpty()) throw new ItemNotFoundException("Region not found.");
-        return dtoList;
+        return dtoList; // response
     }
 
     public List<RegionDTO> getByLan(Language lan) {
@@ -64,24 +64,19 @@ public class RegionService {
             dto.setId(entity.getId());
             dto.setOrderNumber(entity.getOrderNumber());
             switch (lan) {
-                case uz -> dto.setName(entity.getNameUz());
                 case en -> dto.setName(entity.getNameEn());
                 case ru -> dto.setName(entity.getNameRu());
-
+                default -> dto.setName(entity.getNameUz());
             }
-
             dtoList.add(dto);
         });
-        if (dtoList.isEmpty()) throw new ItemNotFoundException("Region not found.");
         return dtoList;
     }
 
-    public void getById(Integer id) {
-        Optional<RegionEntity> entity = regionRepository.findById(id);
-        if (entity.isEmpty()) throw new ItemNotFoundException("Region not found.");
-        toDTO(entity.get());
+    public RegionEntity getById(Integer regionId) {
+        return regionRepository.findById(regionId).
+                orElseThrow(() -> new ItemNotFoundException("Region not found."));
     }
-
 
     private RegionDTO toDTO(RegionEntity entity) {
         RegionDTO dto = new RegionDTO();
@@ -90,13 +85,15 @@ public class RegionService {
         dto.setNameUz(entity.getNameUz());
         dto.setNameEn(entity.getNameEn());
         dto.setNameRu(entity.getNameRu());
-        dto.setVisible(entity.isVisible());
+        dto.setVisible(entity.getVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
     }
 
-    private void isValidRegion(RegionDTO dto){
-        if (dto.getOrderNumber()==null) throw new AppBadRequestException("Order number required");
-
+    private void isValidRegion(RegionDTO dto) {
+        if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
+        if (dto.getNameUz() == null) throw new AppBadRequestException("Name uz required");
+        if (dto.getNameEn() == null) throw new AppBadRequestException("Name en required");
+        if (dto.getNameRu() == null) throw new AppBadRequestException("Name ru required");
     }
 }

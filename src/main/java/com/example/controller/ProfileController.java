@@ -59,10 +59,12 @@ public class ProfileController {
         return ResponseEntity.ok("Deleted profile !!!");
     }
 
-    @PutMapping("/admin/photo")
-    public ResponseEntity<?> updatePhoto(HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok().build();
+    @PutMapping("/photo/{id}")
+    public ResponseEntity<?> updatePhoto(@PathVariable("id") String photoId,
+                                         HttpServletRequest request) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, (ProfileRole) null);
+        profileService.updatePhoto(jwtDTO.getId(), photoId);
+        return ResponseEntity.ok("Photo update !!!");
     }
 
     @GetMapping("/filter")

@@ -1,6 +1,6 @@
 package com.example.entity;
 
-import com.example.superEntity.BaseEntity;
+import com.example.entity.superr.BaseStringEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "article_types")
-public class ArticleTypesEntity extends BaseEntity {
+public class ArticleTypesEntity extends BaseStringEntity {
+
     @Column(name = "article_id")
     private String articleId;
 

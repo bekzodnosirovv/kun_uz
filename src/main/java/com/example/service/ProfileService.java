@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProfileService {
@@ -48,15 +49,14 @@ public class ProfileService {
         entity.setRole(dto.getRole());
         entity.setPrtId(prtId);
         entity.setStatus(dto.getStatus());
-        profileRepository.save(entity);  // Profile save data base
-        // response
+        profileRepository.save(entity);
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
     }
 
-    public void update(Integer profileId, ProfileDTO dto) {
-        // TODO check ?
+    public ProfileDTO update(Integer profileId, ProfileDTO dto) {
+        isValidProfile(dto); // check
         ProfileEntity entity = getById(profileId);
         entity.setName(dto.getName());
         entity.setSurname(dto.getSurname());
@@ -66,11 +66,12 @@ public class ProfileService {
         entity.setEmail(dto.getEmail());
         entity.setRole(dto.getRole());
         profileRepository.save(entity); //  update
+        return dto;
     }
 
     public void updateProfileDetail(Integer profileId, ProfileDTO dto) {
-        // TODO check ?
-        getById(profileId); // check profile
+        if (dto.getName() == null) throw new AppBadRequestException("Name required");
+        if (dto.getSurname() == null) throw new AppBadRequestException("Surname required"); //  check ?
         profileRepository.updateDetail(profileId, dto.getName(), dto.getSurname());
     }
 
@@ -86,15 +87,18 @@ public class ProfileService {
     }
 
     public void updatePhoto(Integer profileId, String imageId) {
-        if (attachRepository.findById(imageId).isPresent()) {
-            throw new ItemNotFoundException("Image not upload");
-        }
+        if (attachRepository.findById(imageId).isPresent()) throw new ItemNotFoundException("Image not upload");
         profileRepository.updatePhoto(profileId, imageId); // update photo
     }
 
     public List<ProfileDTO> filter(ProfileFilterDTO filterDTO) {
         List<ProfileEntity> list = customRepository.filterProfile(filterDTO);
-        return list.stream().map(this::toDTO).toList();
+        return list.stream().map(entity -> {
+            ProfileDTO profileDTO = new ProfileDTO();
+            profileDTO.setName(entity.getName());
+            profileDTO.setSurname(entity.getSurname());
+            return profileDTO;
+        }).toList();
     }
 
     public ProfileEntity getById(Integer id) {
@@ -103,10 +107,12 @@ public class ProfileService {
     }
 
     public ProfileEntity getByPhone(String phone) {
+        if (phone == null) return null;
         return profileRepository.findByPhone(phone).orElse(null);
     }
 
     public ProfileEntity getByEmail(String email) {
+        if (email == null) return null;
         return profileRepository.findByEmail(email).orElse(null);
     }
 
@@ -150,8 +156,6 @@ public class ProfileService {
             throw new AppBadRequestException("Status required");
         }
     }
-
-
 }
 
 

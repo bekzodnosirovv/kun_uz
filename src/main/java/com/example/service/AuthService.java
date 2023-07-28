@@ -25,25 +25,6 @@ public class AuthService {
     @Autowired
     private ProfileService profileService;
 
-    public ApiResponseDTO login(AuthDTO authDTO) {
-        ProfileEntity profileEntity = profileService.getByPhone(authDTO.getPhone());
-        if (profileEntity == null || !profileEntity.getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
-            return new ApiResponseDTO(false, "Login or Password not found");
-        }
-        if (!profileEntity.getStatus().equals(ProfileStatus.ACTIVE) || !profileEntity.getVisible()) {
-            return new ApiResponseDTO(false, "Your status not active. Please contact with support.");
-        }
-        ProfileDTO response = new ProfileDTO();
-        response.setId(profileEntity.getId());
-        response.setName(profileEntity.getName());
-        response.setSurname(profileEntity.getSurname());
-        response.setRole(profileEntity.getRole());
-        response.setPhone(profileEntity.getPhone());
-        response.setJwt(JWTUtil.encode(profileEntity.getId(), profileEntity.getRole())); // set jwt token
-        // response
-        return new ApiResponseDTO(true, response);
-    }
-
     public ProfileDTO registration(ProfileDTO dto) {
         userIsValid(dto); // check dto
         if (profileService.getByEmail(dto.getEmail()) != null) { // check email
@@ -64,6 +45,25 @@ public class AuthService {
         // response dto
         dto.setId(entity.getId());
         return dto;
+    }
+
+    public ApiResponseDTO login(AuthDTO authDTO) {
+        ProfileEntity entity = profileService.getByPhone(authDTO.getPhone());
+        if (entity == null || !entity.getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
+            return new ApiResponseDTO(false, "Login or Password not found");
+        }
+        if (!entity.getStatus().equals(ProfileStatus.ACTIVE) || !entity.getVisible()) {
+            return new ApiResponseDTO(false, "Your status not active. Please contact with support.");
+        }
+        ProfileDTO response = new ProfileDTO();
+        response.setId(entity.getId());
+        response.setName(entity.getName());
+        response.setSurname(entity.getSurname());
+        response.setRole(entity.getRole());
+        response.setPhone(entity.getPhone());
+        response.setJwt(JWTUtil.encode(entity.getId(), entity.getRole())); // set jwt token
+        // response
+        return new ApiResponseDTO(true, response);
     }
 
     private void userIsValid(ProfileDTO dto) {

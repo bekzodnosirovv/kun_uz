@@ -6,7 +6,6 @@ import com.example.dto.JwtDTO;
 import com.example.enums.ProfileRole;
 import com.example.service.CommentService;
 import com.example.util.SecurityUtil;
-import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

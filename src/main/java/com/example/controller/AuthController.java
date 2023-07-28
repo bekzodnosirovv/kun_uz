@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
+
     @Autowired
     private AuthService authService;
 
@@ -20,7 +21,6 @@ public class AuthController {
     public ResponseEntity<?> registration(@RequestBody ProfileDTO dto) {
         return ResponseEntity.ok(authService.registration(dto));
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthDTO authDTO) {

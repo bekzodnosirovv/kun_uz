@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public interface ArticleRepository extends CrudRepository<ArticleEntity, String>,
         PagingAndSortingRepository<ArticleEntity, String> {
-    Optional<ArticleEntity> findByIdAndStatusAndVisibleTrue(String articleId,ArticleStatus status);
+    Optional<ArticleEntity> findByIdAndVisibleTrue(String articleId);
 
     @Transactional
     @Modifying

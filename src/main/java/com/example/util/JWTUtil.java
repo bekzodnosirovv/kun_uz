@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class JWTUtil {
     private static final String secretKey = "!mazgimisan?";
-    private static final int tokenLiveTime = 1000 * 3600 * 2; // 2-hour
+    private static final int tokenLiveTime = 1000 * 3600 * 24; // 2-hour
 
     public static String encode(Integer profileId, ProfileRole role) {
         JwtBuilder jwtBuilder = Jwts.builder();

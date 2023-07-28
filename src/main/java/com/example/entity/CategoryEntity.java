@@ -1,6 +1,6 @@
 package com.example.entity;
 
-import com.example.superEntity.ParentLangEntity;
+import com.example.entity.superr.ParentLangEntity;
 import jakarta.persistence.*;
 
 

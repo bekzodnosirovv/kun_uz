@@ -45,7 +45,7 @@ public class ArticleController {
         return ResponseEntity.ok("Article deleted !!!");
     }
 
-    @PutMapping(value = "/closed/publish/{id}/status")
+    @PutMapping(value = "/closed/publish/{id}/")
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id,
                                           @RequestParam("status") ArticleStatus status,
                                           HttpServletRequest request) {

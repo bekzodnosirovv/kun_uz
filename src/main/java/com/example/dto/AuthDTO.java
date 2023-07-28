@@ -6,5 +6,4 @@ import lombok.Data;
 public class AuthDTO {
     private String phone;
     private String password;
-
 }

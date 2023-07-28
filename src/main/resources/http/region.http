@@ -1,43 +1,46 @@
 ### Create
-
-POST http://localhost:8080/api/v1/region
+POST http://localhost:8080/api/v1/region/admin
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0Njc3NDUsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NzQ5NDUsImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ._Thp-cY1aEHlFsy5RyGknMVkZsC7Gayg3p8wMi0fUhEWbmRlTp01Ty4BjkXqZIdP3EGLHvNJC3d5VXh8HC6aAw
 
+{
+  "orderNumber": 7,
+  "nameUz": "NavoiyUz",
+  "nameEn": "NavoiyEn",
+  "nameRu": "NavoiyRu"
+
+}
+
+### Update
+PUT http://localhost:8080/api/v1/region/admin/52
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0Njc3NDUsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NzQ5NDUsImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ._Thp-cY1aEHlFsy5RyGknMVkZsC7Gayg3p8wMi0fUhEWbmRlTp01Ty4BjkXqZIdP3EGLHvNJC3d5VXh8HC6aAw
 
 {
   "orderNumber": 4,
-  "nameEn": "NamanganEn"
-
-
-
-}
-
-
-### Update
-
-PUT http://localhost:8080/api/v1/region/2
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
-
-{
-  "nameRu":"BukharaRu",
-  "nameEn": "BukharaEn"
+  "nameUz": "Xop boladi",
+  "nameEn": "MuhimEmasEn",
+  "nameRu": "MuhimEmasRu"
 }
 
 ### Delete
+DELETE http://localhost:8080/api/v1/region/admin/52
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0Njc3NDUsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NzQ5NDUsImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ._Thp-cY1aEHlFsy5RyGknMVkZsC7Gayg3p8wMi0fUhEWbmRlTp01Ty4BjkXqZIdP3EGLHvNJC3d5VXh8HC6aAw
 
-DELETE http://localhost:8080/api/v1/region/2
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
 
-
-### Get All
-
-GET http://localhost:8080/api/v1/region/all
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+### Get all page
+GET http://localhost:8080/api/v1/region/admin/all
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0Njc3NDUsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NzQ5NDUsImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ._Thp-cY1aEHlFsy5RyGknMVkZsC7Gayg3p8wMi0fUhEWbmRlTp01Ty4BjkXqZIdP3EGLHvNJC3d5VXh8HC6aAw
 
 
 ### Get by lan
+### Get all page
+GET http://localhost:8080/api/v1/region/lan?lan=ru
 
-GET http://localhost:8080/api/v1/region/lan?lan=uz
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+
+
+
+
+
+

@@ -1,7 +1,8 @@
 package com.example.entity;
 
+import com.example.entity.superr.BaseStringEntity;
 import com.example.enums.ArticleStatus;
-import com.example.superEntity.BaseStringEntity;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

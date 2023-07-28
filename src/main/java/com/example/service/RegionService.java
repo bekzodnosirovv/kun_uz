@@ -44,7 +44,9 @@ public class RegionService {
 
     public void delete(Integer regionId) {
         getById(regionId); // check
-        regionRepository.deletedById(regionId); // update visible
+        if (regionRepository.deletedById(regionId) != 1) {
+            throw new ItemNotFoundException("Region not deleted");
+        }  // update visible
     }
 
     public List<RegionDTO> getAll() {

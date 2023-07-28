@@ -34,8 +34,4 @@ public class ArticleDTO {
     private AttachDTO attachDTO;
     private RegionDTO regionDTO;
     private CategoryDTO categoryDTO;
-
-
-
-
 }

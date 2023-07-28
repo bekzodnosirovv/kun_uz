@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AttachDTO {
@@ -18,9 +17,10 @@ public class AttachDTO {
     private Long size;
     private String extension;
     private LocalDateTime createdDate;
+    private String url;
 
-    public AttachDTO(String id,String path) {
+    public AttachDTO(String id,String url) {
         this.id = id;
-        this.path=path;
+        this.url=url;
     }
 }

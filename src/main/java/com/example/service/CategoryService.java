@@ -46,7 +46,9 @@ public class CategoryService {
 
     public void delete(Integer id) {
         getById(id); // check
-        categoryRepository.deletedById(id); // update visible
+        if (categoryRepository.deletedById(id) != 1) {
+            throw new ItemNotFoundException("Category not deleted");
+        }    // update visible
     }
 
     public List<CategoryDTO> getAll() {

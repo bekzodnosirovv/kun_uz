@@ -15,7 +15,8 @@ public class SecuredFilterConfig {
     public FilterRegistrationBean<Filter> filterRegistrationBean() {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
         bean.setFilter(jwtFilter);
-        bean.addUrlPatterns("/api/v1/profile/admin/*");
+        bean.addUrlPatterns("/api/v1/profile/closed/*");
+        bean.addUrlPatterns("/api/v1/article/closed/*");
         bean.addUrlPatterns("/api/v1/region/admin/*");
         bean.addUrlPatterns("/api/v1/category/admin/*");
         bean.addUrlPatterns("/api/v1/articleType/admin/*");

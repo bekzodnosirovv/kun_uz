@@ -1,33 +1,39 @@
 
- ### Create
-POST http://localhost:8080/api/v1/profile
+### Create profile
+POST http://localhost:8080/api/v1/profile/closed
 Content-Type: application/json
-
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NTcxNzksImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NjQzNzksImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ.1V9SQAyuSt5MrZWFi2u_ykPzX3QFjvglw3Qjsq9i7h-gQCxZsOvSoknfi-zmb_woqVL0CZ8VQKOZdxGxrqftKg
 
 {
-  "name": "Eshmat",
-  "surname": "Eshmatov",
-  "email": "eshmat@gmaol.com",
-  "phone": "+998901234561",
-  "password": "eshmat123",
+  "name": "AAA",
+  "surname": "GFD",
+  "email": "gulGFi@gmaol.com",
+  "phone": "+998901234564",
+  "password": "1236",
+  "status": "ACTIVE",
   "role": "PUBLISHER"
-
 }
 
-### Update
-PUT http://localhost:8080/api/v1/profile/1
+### Update profile
+PUT http://localhost:8080/api/v1/profile/closed/3
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NzYzNzMsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA1NjI3NzMsImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ.pTx_dA30O9hRlf1iQ55OEnFULAPsu6uB6RVzZDVb4CshxP2g5b2YccSIhuu8q4ebb_M-nMjhghzesjOb5LKPqg
 
 {
-  "name": "Alijon"
-
+  "name": "GFDS",
+  "surname": "HGFD",
+  "email": "publishGFi@gmaol.com",
+  "phone": "+998901234597",
+  "password": "1236",
+  "status": "ACTIVE",
+  "role": "PUBLISHER"
 }
 
-### Update detail
-PUT http://localhost:8080/api/v1/profile/detail
+
+### Update detail any
+PUT http://localhost:8080/api/v1/profile/closed/detail
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NTcxNzksImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NjQzNzksImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ.1V9SQAyuSt5MrZWFi2u_ykPzX3QFjvglw3Qjsq9i7h-gQCxZsOvSoknfi-zmb_woqVL0CZ8VQKOZdxGxrqftKg
 
 {
   "name": "MENMANMEN",
@@ -35,14 +41,14 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb
 }
 
 
-### Get all
-GET http://localhost:8080/api/v1/profile/all?page=1&size=4
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+### Get all profile
+GET http://localhost:8080/api/v1/profile/closed/all?page=1&size=4
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NTcxNzksImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NjQzNzksImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ.1V9SQAyuSt5MrZWFi2u_ykPzX3QFjvglw3Qjsq9i7h-gQCxZsOvSoknfi-zmb_woqVL0CZ8VQKOZdxGxrqftKg
 
 
-### Delete
-DELETE http://localhost:8080/api/v1/profile/1
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk3NTcxNTIsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk3NjQzNTIsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.RN4Pm4kli0pPJU_QZcn8oFUQdseD8Vj4wWgkKn-z_uzJsP8LJaYPQaWq0s1EjTgMG-d17XsPD-tCUvEMluX0iQ
+### Delete profile
+DELETE http://localhost:8080/api/v1/profile/closed/5
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NTcxNzksImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NjQzNzksImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ.1V9SQAyuSt5MrZWFi2u_ykPzX3QFjvglw3Qjsq9i7h-gQCxZsOvSoknfi-zmb_woqVL0CZ8VQKOZdxGxrqftKg
 
 
 ### Filter
@@ -51,5 +57,6 @@ Content-Type: application/json
 
 
 {
-  "name": "Es"
+  "createdDateFrom": "2023-07-25",
+  "createdDateTo": "2023-08-08"
 }

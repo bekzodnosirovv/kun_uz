@@ -17,7 +17,7 @@ public interface CategoryRepository extends CrudRepository<CategoryEntity, Integ
         PagingAndSortingRepository<CategoryEntity, Integer> {
     @Transactional
     @Modifying
-    @Query("update RegionEntity set visible=false where id=:id")
+    @Query("update CategoryEntity set visible=false where id=:id")
     int deletedById(@Param("id") Integer id);
     List<CategoryEntity> findAllByVisibleTrueOrderByOrderNumber();
 }

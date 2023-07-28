@@ -9,22 +9,22 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "comment_like")
-public class CommentLikeEntity extends BaseEntity {
+@Table(name = "article_like")
+public class ArticleLikeEntity extends BaseEntity {
 
     @Column(name = "profile_id")
     private Integer profileId;
 
     @ManyToOne
-    @JoinColumn(name = "profile_id", insertable = false, updatable = false)
+    @JoinColumn(name = "profile_id",insertable = false,updatable = false)
     private ProfileEntity profile;
 
-    @Column(name = "comment_id")
-    private String commentId;
+    @Column(name = "article_id")
+    private String articleId;
 
     @ManyToOne
-    @JoinColumn(name = "comment_id", insertable = false, updatable = false)
-    private CommentEntity comment;
+    @JoinColumn(name = "article_id",insertable = false,updatable = false)
+    private ArticleEntity article;
 
     @Column(name = "status")
     @Enumerated(value = EnumType.STRING)

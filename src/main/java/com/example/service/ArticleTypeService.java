@@ -46,7 +46,9 @@ public class ArticleTypeService {
 
     public void delete(Integer typeId) {
         getById(typeId); // check
-        articleTypeRepository.deletedById(typeId); // update visible
+        if (articleTypeRepository.deletedById(typeId) != 1) {
+            throw new ItemNotFoundException("Type not deleted");
+        }   // update visible
     }
 
     public PageImpl<ArticleTypeDTO> getAll(Integer page, Integer size) {
@@ -95,6 +97,5 @@ public class ArticleTypeService {
         if (dto.getNameUz() == null) throw new AppBadRequestException("Name uz required");
         if (dto.getNameEn() == null) throw new AppBadRequestException("Name en required");
         if (dto.getNameRu() == null) throw new AppBadRequestException("Name ru required");
-
     }
 }

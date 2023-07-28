@@ -1,16 +1,47 @@
 ### Cretae
 POST http://localhost:8080/api/v1/article/closed
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NzM1NTksImlkIjozLCJyb2xlIjoiTU9ERVJBVE9SIiwiZXhwIjoxNjkwNDgwNzU5LCJpc3MiOiJrdW4gdXogdGVzdCBwb3J0YWxpIn0.2K1HNoU04A7nN8pi4-ACJ1pw9GT4Qy51F4IjeN7kDwvEiWvh_UMf-WfOxfWXBMS8Qpiur-91hSx-9lbPZU_F9Q
 
 {
-  "title": "begona bahor",
-  "content": "Eshmat toshmat qani. Toshmat eshmatni kormadingmi. "
-
+  "title": " ooooo",
+  "description": "hhhoooooooooohhhhhh hhhhhhhhhh hhhhhhhhhhh",
+  "content": "Eshmat toshmat qani. Toshmat eshmatni kormadingmi.jhgf kjhg lkjhg",
+  "regionId": 54,
+  "categoryId": 5,
+  "articleTypes": [1,3,4]
 }
+
+### Update
+PUT  http://localhost:8080/api/v1/article/closed/cea824f6-4b4b-4395-9165-a8a03de07c23
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NzM1NTksImlkIjozLCJyb2xlIjoiTU9ERVJBVE9SIiwiZXhwIjoxNjkwNDgwNzU5LCJpc3MiOiJrdW4gdXogdGVzdCBwb3J0YWxpIn0.2K1HNoU04A7nN8pi4-ACJ1pw9GT4Qy51F4IjeN7kDwvEiWvh_UMf-WfOxfWXBMS8Qpiur-91hSx-9lbPZU_F9Q
+
+{
+  "title": " update qilindi",
+  "description": "update qilindi",
+  "content": "Eshmat toshmat qani. Toshmat eshmatni kormadingmi.jhgf kjhg lkjhg",
+  "regionId": 54,
+  "categoryId": 5,
+  "articleTypes": [1,2,3]
+}
+
+### Deleted
+DELETE http://localhost:8080/api/v1/article/closed/cea824f6-4b4b-4395-9165-a8a03de07c23
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NzM1NTksImlkIjozLCJyb2xlIjoiTU9ERVJBVE9SIiwiZXhwIjoxNjkwNDgwNzU5LCJpc3MiOiJrdW4gdXogdGVzdCBwb3J0YWxpIn0.2K1HNoU04A7nN8pi4-ACJ1pw9GT4Qy51F4IjeN7kDwvEiWvh_UMf-WfOxfWXBMS8Qpiur-91hSx-9lbPZU_F9Q
+
+
+### Change status
+PUT http://localhost:8080/api/v1/article/closed/778bebf8-eb89-45ee-a0c0-d495ae10b825
+Authorization: Bearer
+
+
 
 
 ### Get 5 article by type
 GET http://localhost:8080/api/v1/article/lastFive?type=1
+
+
 
 ### Get by category pagination
 GET http://localhost:8080/api/v1/article/byCategory/1/page

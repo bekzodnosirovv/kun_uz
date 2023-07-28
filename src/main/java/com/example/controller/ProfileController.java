@@ -19,31 +19,30 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PostMapping("/admin")
+    @PostMapping("/closed")
     public ResponseEntity<?> create(@RequestBody ProfileDTO dto,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(profileService.create(jwtDTO.getId(), dto));
     }
 
-    @PutMapping("/admin/{id}")
+    @PutMapping("/closed/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @RequestBody ProfileDTO dto,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        profileService.update(id, dto);
-        return ResponseEntity.ok("Update profile !!!");
+        return ResponseEntity.ok( profileService.update(id, dto));
     }
 
-    @PutMapping("/detail")
+    @PutMapping("/closed/detail")
     public ResponseEntity<?> updateProfileDetail(@RequestBody ProfileDTO dto,
                                                  HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, (ProfileRole) null);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
         profileService.updateProfileDetail(jwtDTO.getId(), dto);
         return ResponseEntity.ok("Update profile detail !!!");
     }
 
-    @GetMapping("/admin/all")
+    @GetMapping("/closed/all")
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                     HttpServletRequest request) {
@@ -51,7 +50,7 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getAll(page - 1, size));
     }
 
-    @DeleteMapping("/admin/{id}")
+    @DeleteMapping("/closed/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
@@ -59,10 +58,10 @@ public class ProfileController {
         return ResponseEntity.ok("Deleted profile !!!");
     }
 
-    @PutMapping("/photo/{id}")
+    @PutMapping("/closed/photo/{id}")
     public ResponseEntity<?> updatePhoto(@PathVariable("id") String photoId,
                                          HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, (ProfileRole) null);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
         profileService.updatePhoto(jwtDTO.getId(), photoId);
         return ResponseEntity.ok("Photo update !!!");
     }

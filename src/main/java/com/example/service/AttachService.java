@@ -6,6 +6,7 @@ import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.AttachRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -31,7 +32,10 @@ import java.util.*;
 public class AttachService {
     @Autowired
     private AttachRepository attachRepository;
-    private final String folderName = "attaches";
+
+
+    @Value("${attach.folder.name}")
+    private  String folderName;
 
 
 //    public String saveToSystem(MultipartFile file) {

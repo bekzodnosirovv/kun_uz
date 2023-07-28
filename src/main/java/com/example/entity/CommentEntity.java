@@ -1,18 +1,16 @@
 package com.example.entity;
 
-import com.example.superEntity.BaseStringEntity;
+
+import com.example.entity.superr.BaseStringEntity;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
+
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "comment")
 public class CommentEntity extends BaseStringEntity {

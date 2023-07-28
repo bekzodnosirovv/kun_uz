@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleTypeDTO {
+
     private Integer id;
     private Integer orderNumber;
     private String name;
@@ -20,7 +21,6 @@ public class ArticleTypeDTO {
     private String nameEn;
     private Boolean visible;
     private LocalDateTime createdDate;
-
 
     public ArticleTypeDTO(Integer id, String name) {
         this.id = id;

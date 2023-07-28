@@ -234,7 +234,7 @@ public class ArticleService {
     }
 
     public ArticleEntity getById(String articleId) {
-        return articleRepository.findByIdAndStatusAndVisibleTrue(articleId, ArticleStatus.PUBLISHED).
+        return articleRepository.findByIdAndVisibleTrue(articleId).
                 orElseThrow(() -> new ItemNotFoundException("Article not found"));
     }
 
@@ -242,7 +242,6 @@ public class ArticleService {
         if (dto.getTitle() == null) throw new AppBadRequestException("Title required");
         if (dto.getDescription() == null) throw new AppBadRequestException("Description required");
         if (dto.getContent() == null) throw new AppBadRequestException("Content required");
-        if (dto.getImageId() == null) throw new AppBadRequestException("Image required");
         if (dto.getRegionId() == null) throw new AppBadRequestException("Region required");
         if (dto.getCategoryId() == null) throw new AppBadRequestException("Category required");
         if (dto.getArticleTypes() == null) throw new AppBadRequestException("Article type required");

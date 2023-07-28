@@ -17,7 +17,7 @@ public interface ArticleTypeRepository extends CrudRepository<ArticleTypeEntity,
 
     @Transactional
     @Modifying
-    @Query("update RegionEntity set visible=false where id=:id")
+    @Query("update ArticleTypeEntity set visible=false where id=:id")
     int deletedById(@Param("id") Integer id);
 
     List<ArticleTypeEntity> findAllByVisibleTrueOrderByOrderNumber();

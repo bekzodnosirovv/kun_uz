@@ -81,7 +81,7 @@ public class ArticleService {
 
     // get article 5 by type
     public List<ArticleDTO> getLastFiveByType(Integer typeId) {
-        List<ArticleEntity> entityList = articleRepository.getListByType(typeId, 5, ArticleStatus.PUBLISHED);
+        List<ArticleEntity> entityList = articleRepository.getListByType(typeId, 5);
         if (entityList.isEmpty()) return new LinkedList<>();
         // response article short info
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
@@ -89,7 +89,7 @@ public class ArticleService {
 
     // get article 3 by type
     public List<ArticleDTO> getLastThreeByType(Integer typeId) {
-        List<ArticleEntity> entityList = articleRepository.getListByType(typeId, 3, ArticleStatus.PUBLISHED);
+        List<ArticleEntity> entityList = articleRepository.getListByType(typeId, 3);
         if (entityList.isEmpty()) return new LinkedList<>();
         // response article short info
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
@@ -97,10 +97,10 @@ public class ArticleService {
 
     // get article 8
     public List<ArticleDTO> getLastEight(List<String> list) {
-        List<ArticleShortMapper> shortMappers = articleRepository.getEightList(ArticleStatus.PUBLISHED, list);
+        List<ArticleShortMapper> shortMappers = articleRepository.getEightList(list);
         if (shortMappers.isEmpty()) return new LinkedList<>();
         // response article short info
-        return shortMappers.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImageId(), e.getPublishedDate())).toList();
+        return shortMappers.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage(), e.getPublishedDate())).toList();
 
     }
 
@@ -113,28 +113,28 @@ public class ArticleService {
 
     //  Get Last 4 Article By Types and except given article id
     public List<ArticleDTO> getLastFourByType(String articleId, Integer typeId) {
-        List<ArticleEntity> entityList = articleRepository.getLastFourByType(typeId, ArticleStatus.PUBLISHED, articleId);
+        List<ArticleEntity> entityList = articleRepository.getLastFourByType(typeId, articleId);
         if (entityList.isEmpty()) return new LinkedList<>();
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
     // get 4 most read article
     public List<ArticleDTO> getMostReadList() {
-        List<ArticleEntity> entityList = articleRepository.getListMostRead(ArticleStatus.PUBLISHED);
+        List<ArticleEntity> entityList = articleRepository.findTop4ByStatusAndVisibleTrueOrderByViewCountDesc(ArticleStatus.PUBLISHED);
         if (entityList.isEmpty()) return new LinkedList<>();
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
     // get 4 by tag name
     public List<ArticleDTO> getByTagName(Integer tagId) {
-        List<ArticleEntity> entityList = articleRepository.getListByTag(tagId, ArticleStatus.PUBLISHED);
+        List<ArticleEntity> entityList = articleRepository.getListByTag(tagId);
         if (entityList.isEmpty()) return new LinkedList<>();
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
 
     // by type and region
     public List<ArticleDTO> getByTypeAndRegion(Integer typeId, Integer regionId) {
-        List<ArticleEntity> entityList = articleRepository.getByTypeAndRegion(typeId, regionId, ArticleStatus.PUBLISHED);
+        List<ArticleEntity> entityList = articleRepository.getByTypeAndRegion(typeId, regionId);
         if (entityList.isEmpty()) return new LinkedList<>();
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
@@ -142,14 +142,14 @@ public class ArticleService {
     // get region id pagination
     public PageImpl<ArticleDTO> getByRegionPagination(Integer regionId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ArticleEntity> entityPage = articleRepository.findAllByRegionIdAndStatusAndVisibleTrue(regionId, ArticleStatus.PUBLISHED, pageable);
+        Page<ArticleEntity> entityPage = articleRepository.findAllByRegionIdAndStatusAndVisibleTrue(pageable,regionId, ArticleStatus.PUBLISHED);
         return new PageImpl<>(entityPage.getContent().stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList(),
                 pageable, entityPage.getTotalElements());
     }
 
     // get last 5 by category id
     public List<ArticleDTO> getLastFiveByCategory(Integer categoryId) {
-        List<ArticleEntity> entityList = articleRepository.getLastFiveByCategory(ArticleStatus.PUBLISHED);
+        List<ArticleEntity> entityList = articleRepository.findTop5ByStatusAndCategoryIdAndVisibleTrue(ArticleStatus.PUBLISHED,categoryId);
         if (entityList.isEmpty()) return new LinkedList<>();
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
@@ -157,19 +157,19 @@ public class ArticleService {
     // get article by category pagination
     public PageImpl<ArticleDTO> getLastFiveByCategory(Integer categoryId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ArticleEntity> entityPage = articleRepository.findAllByRegionIdAndStatusAndVisibleTrue(categoryId, ArticleStatus.PUBLISHED, pageable);
+        Page<ArticleEntity> entityPage = articleRepository.findAllByCategoryIdAndStatusAndVisibleTrue(pageable,categoryId, ArticleStatus.PUBLISHED);
         return new PageImpl<>(entityPage.getContent().stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList(),
                 pageable, entityPage.getTotalElements());
     }
 
-    public Integer increaseViewCountById(String articleId) {
-        ArticleEntity entity = getById(articleId);
-        return entity.getViewCount();
+    public boolean increaseViewCountById(String articleId) {
+        int effectRow = articleRepository.increaseView(articleId);
+        return effectRow == 1;
     }
 
-    public Integer increaseShareCountById(String categoryId) {
-        ArticleEntity entity = getById(categoryId);
-        return entity.getSharedCount();
+    public boolean increaseShareCountById(String articleId) {
+        int effectRow = articleRepository.increaseShared(articleId);
+        return effectRow == 1;
     }
 
     // filter
@@ -191,24 +191,10 @@ public class ArticleService {
         fullInfo.setPublishedDate(entity.getPublishedDate());
         fullInfo.setViewCount(entity.getViewCount());
         // get region
-        RegionEntity region = regionService.getById(entity.getRegionId());
-        RegionDTO regionDTO = new RegionDTO();
-        regionDTO.setId(region.getId());
-        switch (lan) {
-            case en -> regionDTO.setName(region.getNameEn());
-            case ru -> regionDTO.setName(region.getNameRu());
-            default -> regionDTO.setName(region.getNameUz());
-        }
+        RegionDTO regionDTO = regionService.getDTO(entity.getRegion(), lan);
         fullInfo.setRegionDTO(regionDTO); // set region
         // get category
-        CategoryEntity category = categoryService.getById(entity.getCategoryId());
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setId(category.getId());
-        switch (lan) {
-            case en -> categoryDTO.setName(category.getNameEn());
-            case ru -> categoryDTO.setName(category.getNameRu());
-            default -> categoryDTO.setName(category.getNameUz());
-        }
+        CategoryDTO categoryDTO = categoryService.getDTO(entity.getCategory(),lan);
         fullInfo.setCategoryDTO(categoryDTO); // set category
 
 
@@ -225,11 +211,7 @@ public class ArticleService {
         shortInfo.setTitle(title);
         shortInfo.setDescription(description);
         shortInfo.setPublishedDate(publishDate);
-        // get attach
-        AttachEntity attachEntity = attachService.get(imageId);
-        // create path
-        String path = attachEntity.getPath() + attachEntity.getId() + attachEntity.getExtension();
-        shortInfo.setAttachDTO(new AttachDTO(attachEntity.getId(), path));
+        shortInfo.setAttachDTO(attachService.getDTO(imageId));
         return shortInfo;
     }
 

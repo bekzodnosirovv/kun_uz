@@ -6,9 +6,12 @@ import java.time.LocalDateTime;
 
 public interface ArticleShortMapper {
     String getId();
+
     String getDescription();
+
     String getTitle();
-    String getImageId();
+
+    String getImage();
 
     LocalDateTime getPublishedDate();
 

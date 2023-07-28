@@ -18,9 +18,4 @@ public class CategoryDTO {
     private String nameEn;
     private Boolean visible;
     private LocalDateTime createdDate;
-
-    public CategoryDTO(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 }

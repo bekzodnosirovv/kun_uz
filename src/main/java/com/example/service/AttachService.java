@@ -35,8 +35,10 @@ public class AttachService {
 
 
     @Value("${attach.folder.name}")
-    private  String folderName;
+    private String folderName;
 
+    @Value("${attach.url}")
+    private String attachUrl;
 
 //    public String saveToSystem(MultipartFile file) {
 //        try {
@@ -183,12 +185,18 @@ public class AttachService {
         }
     }
 
+    public AttachDTO getDTO(String fileName) {
+        if (fileName == null) return null;
+        return new AttachDTO(fileName, attachUrl + "/" + fileName);
+    }
+
     private String getUrl(String pathFolder, String key, String extension) {
         return folderName + "/" + pathFolder + "/" + key + "." + extension;
     }
 
     public AttachEntity get(String fileName) {
-        return attachRepository.findById(fileName).orElseThrow(() -> new ItemNotFoundException("File not found"));
+        if (fileName == null) throw new ItemNotFoundException("Image not found");
+        return attachRepository.findById(fileName).orElseThrow(() -> new ItemNotFoundException("Image not found"));
     }
 
     private String getYmDString() {

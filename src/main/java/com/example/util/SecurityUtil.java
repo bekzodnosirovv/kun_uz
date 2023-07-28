@@ -19,7 +19,7 @@ public class SecurityUtil {
     public static JwtDTO hasRole(HttpServletRequest request, ProfileRole... requiredRoles) {
         Integer id = (Integer) request.getAttribute("id");
         ProfileRole role = (ProfileRole) request.getAttribute("role");
-        if (requiredRoles==null) return new JwtDTO(id, role);
+        if (requiredRoles == null) return new JwtDTO(id, role);
         boolean found = false;
         for (ProfileRole r : requiredRoles) {
             if (r.equals(role)) {

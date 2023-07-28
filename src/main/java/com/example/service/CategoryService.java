@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.dto.CategoryDTO;
 import com.example.dto.RegionDTO;
 import com.example.entity.CategoryEntity;
+import com.example.entity.RegionEntity;
 import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
@@ -62,22 +63,24 @@ public class CategoryService {
 
     public List<CategoryDTO> getByLan(Language lan) {
         List<CategoryEntity> entities = categoryRepository.findAllByVisibleTrueOrderByOrderNumber();
-        List<CategoryDTO> dtoList = new LinkedList<>();
-        entities.forEach(entity -> {
-            CategoryDTO dto = new CategoryDTO();
-            dto.setId(entity.getId());
-            dto.setOrderNumber(entity.getOrderNumber());
-            switch (lan) {
-                case en -> dto.setName(entity.getNameEn());
-                case ru -> dto.setName(entity.getNameRu());
-                default -> dto.setName(entity.getNameUz());
-            }
-            dtoList.add(dto);
-        });
-        return dtoList; // response list
+        return entities.stream().map(entity -> getDTO(entity, lan)).toList();
+    }
+
+    public CategoryDTO getDTO(CategoryEntity entity, Language lan) {
+        if (entity == null) return null;
+        CategoryDTO dto = new CategoryDTO();
+        dto.setId(entity.getId());
+        dto.setOrderNumber(entity.getOrderNumber());
+        switch (lan) {
+            case en -> dto.setName(entity.getNameEn());
+            case ru -> dto.setName(entity.getNameRu());
+            default -> dto.setName(entity.getNameUz());
+        }
+        return dto;
     }
 
     public CategoryEntity getById(Integer id) {
+        if (id==null) throw new ItemNotFoundException("Category not found");
         return categoryRepository.findById(id).
                 orElseThrow(() -> new ItemNotFoundException("Category not found."));
     }

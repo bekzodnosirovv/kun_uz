@@ -2,14 +2,14 @@
 ### Create profile
 POST http://localhost:8080/api/v1/profile/closed
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA0NTcxNzksImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA0NjQzNzksImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ.1V9SQAyuSt5MrZWFi2u_ykPzX3QFjvglw3Qjsq9i7h-gQCxZsOvSoknfi-zmb_woqVL0CZ8VQKOZdxGxrqftKg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA1MjM4MDYsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTA2MTAyMDYsImlzcyI6Imt1biB1eiB0ZXN0IHBvcnRhbGkifQ.9HHAXKM60rEp818-qsNS-B2U60zryeM3VA2BerXYeX9B1_Sq2E5dlSHuafRNzq3rlYIRt2PPO5-_eGwQI_uVEw
 
 {
-  "name": "AAA",
+  "name": "Publisher",
   "surname": "GFD",
-  "email": "gulGFi@gmaol.com",
-  "phone": "+998901234564",
-  "password": "1236",
+  "email": "ulGFi@gmaol.com",
+  "phone": "+998901234500",
+  "password": "000",
   "status": "ACTIVE",
   "role": "PUBLISHER"
 }

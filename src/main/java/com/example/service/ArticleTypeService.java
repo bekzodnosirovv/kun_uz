@@ -1,8 +1,10 @@
 package com.example.service;
 
 import com.example.dto.ArticleTypeDTO;
+import com.example.dto.CategoryDTO;
 import com.example.dto.RegionDTO;
 import com.example.entity.ArticleTypeEntity;
+import com.example.entity.CategoryEntity;
 import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
@@ -59,23 +61,22 @@ public class ArticleTypeService {
 
     public List<ArticleTypeDTO> getByLan(Language lan) {
         List<ArticleTypeEntity> entities = articleTypeRepository.findAllByVisibleTrueOrderByOrderNumber();
-        List<ArticleTypeDTO> dtoList = new LinkedList<>();
-        entities.forEach(entity -> {
-            ArticleTypeDTO dto = new ArticleTypeDTO();
-            dto.setId(entity.getId());
-            dto.setOrderNumber(entity.getOrderNumber());
-            switch (lan) {
-                case en -> dto.setName(entity.getNameEn());
-                case ru -> dto.setName(entity.getNameRu());
-                default -> dto.setName(entity.getNameUz());
-            }
-            dtoList.add(dto);
-        });
-        // response
-        return dtoList;
+        return entities.stream().map(entity -> getDTO(entity, lan)).toList();
     }
-
+    public ArticleTypeDTO getDTO(ArticleTypeEntity entity, Language lan) {
+        if (entity == null) return null;
+        ArticleTypeDTO dto = new ArticleTypeDTO();
+        dto.setId(entity.getId());
+        dto.setOrderNumber(entity.getOrderNumber());
+        switch (lan) {
+            case en -> dto.setName(entity.getNameEn());
+            case ru -> dto.setName(entity.getNameRu());
+            default -> dto.setName(entity.getNameUz());
+        }
+        return dto;
+    }
     public ArticleTypeEntity getById(Integer typeId) {
+        if (typeId==null) throw new ItemNotFoundException("Article type not found");
         return articleTypeRepository.findById(typeId).
                 orElseThrow(() -> new ItemNotFoundException("Article type not found."));
     }

@@ -37,51 +37,51 @@ public interface ArticleRepository extends CrudRepository<ArticleEntity, String>
 
 
     @Query(value = "from ArticleEntity  as a inner join a.articleTypes as at " +
-            "where at.articleTypeId=:typeId and a.status=:status and a.visible=true " +
+            "where at.articleTypeId=:typeId and a.status=PUBLISHED and a.visible=true " +
             "order by a.publishedDate desc limit :lim")
     List<ArticleEntity> getListByType(@Param("typeId") Integer articleTypeId,
-                                      @Param("lim") Integer limit,
-                                      @Param("status") ArticleStatus status);
+                                      @Param("lim") Integer limit);
 
-    @Query(value = "select id,title,description, image_id as imageId, published_date as publishedDate " +
-            "from article  where  status=:status " +
+    @Query(value = "select id,title,description,image_id as image, published_date as publishedDate " +
+            "from article  where  status='PUBLISHED' " +
             "and visible=true and id not in (:list) " +
             "order by published_date desc limit 8", nativeQuery = true)
-    List<ArticleShortMapper> getEightList(@Param("status") ArticleStatus status,
-                                          @Param("list") List<String> list);
+    List<ArticleShortMapper> getEightList(@Param("list") List<String> list);
 
-    Optional<ArticleEntity> getByIdAndStatusAndVisibleTrue(String id, ArticleStatus status);
+
 
     @Query("from ArticleEntity as a inner join a.articleTypes as at " +
-            "where at.articleTypeId=:typeId and a.status=:status and a.visible=true " +
+            "where at.articleTypeId=:typeId and a.status=PUBLISHED and a.visible=true " +
             "and a.id<>:articleId order by a.publishedDate desc limit 4")
     List<ArticleEntity> getLastFourByType(@Param("typeId") Integer typeId,
-                                          @Param("status") ArticleStatus status,
                                           @Param("articleId") String articleId);
 
-    Page<ArticleEntity> findAllByCategoryId(CategoryEntity entity, Pageable pageable);
 
-
-    @Query("from ArticleEntity where status=:status and visible=true order by viewCount desc limit 4")
-    List<ArticleEntity> getListMostRead(@Param("status") ArticleStatus status);
 
     @Query("from ArticleEntity as a inner join a.articleTags as t where t.tagId=:tagId and " +
-            "a.visible=true and a.status=:status order by a.publishedDate desc limit 4")
-    List<ArticleEntity> getListByTag(@Param("tagId") Integer tagId,
-                                     @Param("status") ArticleStatus status);
+            "a.visible=true and a.status=PUBLISHED order by a.publishedDate desc limit 4")
+    List<ArticleEntity> getListByTag(@Param("tagId") Integer tagId);
 
     @Query("from ArticleEntity as a inner join a.articleTypes as ar where ar.articleTypeId=:typeId " +
-            "and a.visible=true and a.regionId=:regionId and a.status=:status " +
+            "and a.visible=true and a.regionId=:regionId and a.status=PUBLISHED " +
             "order by a.publishedDate desc limit 5")
     List<ArticleEntity> getByTypeAndRegion(@Param("typeId") Integer typeId,
-                                           @Param("regionId") Integer regionId,
-                                           @Param("status") ArticleStatus status);
+                                           @Param("regionId") Integer regionId);
 
-    Page<ArticleEntity> findAllByRegionIdAndStatusAndVisibleTrue(Integer regionId, ArticleStatus status, Pageable pageable);
+    Page<ArticleEntity> findAllByRegionIdAndStatusAndVisibleTrue(Pageable pageable,Integer regionId, ArticleStatus status);
+    Page<ArticleEntity> findAllByCategoryIdAndStatusAndVisibleTrue(Pageable pageable,Integer categoryId,ArticleStatus status);
 
-    @Query("from ArticleEntity where categoryId=:categoryId and status=:status and visible=true " +
-            "order by publishedDate desc limit 5")
-    List<ArticleEntity> getLastFiveByCategory(@Param("status") ArticleStatus status);
+    List<ArticleEntity> findTop5ByStatusAndCategoryIdAndVisibleTrue(ArticleStatus status,Integer id);
+    List<ArticleEntity> findTop4ByStatusAndVisibleTrueOrderByViewCountDesc(ArticleStatus status);
 
-    Page<ArticleEntity> findAllByCategoryIdAndStatusAndVisibleTrue(Integer categoryId, ArticleStatus status, Pageable pageable);
+    Optional<ArticleEntity> getByIdAndStatusAndVisibleTrue(String id, ArticleStatus status);
+    @Transactional
+    @Modifying
+    @Query("update ArticleEntity set viewCount=viewCount+1 where id=:articleId ")
+    int increaseView(@Param("articleId") String articleId);
+
+    @Transactional
+    @Modifying
+    @Query("update ArticleEntity set sharedCount=sharedCount+1 where id=:articleId ")
+    int increaseShared(@Param("articleId") String articleId);
 }

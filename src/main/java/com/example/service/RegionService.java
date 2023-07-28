@@ -60,24 +60,26 @@ public class RegionService {
 
     public List<RegionDTO> getByLan(Language lan) {
         List<RegionEntity> entities = regionRepository.findAllByVisibleTrueOrderByOrderNumber();
-        List<RegionDTO> dtoList = new LinkedList<>();
-        entities.forEach(entity -> {
-            RegionDTO dto = new RegionDTO();
-            dto.setId(entity.getId());
-            dto.setOrderNumber(entity.getOrderNumber());
-            switch (lan) {
-                case en -> dto.setName(entity.getNameEn());
-                case ru -> dto.setName(entity.getNameRu());
-                default -> dto.setName(entity.getNameUz());
-            }
-            dtoList.add(dto);
-        });
-        return dtoList;
+        return entities.stream().map(entity -> getDTO(entity, lan)).toList();
+    }
+
+    public RegionDTO getDTO(RegionEntity entity, Language lan) {
+        if (entity == null) return null;
+        RegionDTO dto = new RegionDTO();
+        dto.setId(entity.getId());
+        dto.setOrderNumber(entity.getOrderNumber());
+        switch (lan) {
+            case en -> dto.setName(entity.getNameEn());
+            case ru -> dto.setName(entity.getNameRu());
+            default -> dto.setName(entity.getNameUz());
+        }
+        return dto;
     }
 
     public RegionEntity getById(Integer regionId) {
+        if (regionId == null) throw new ItemNotFoundException("Region not found");
         return regionRepository.findById(regionId).
-                orElseThrow(() -> new ItemNotFoundException("Region not found."));
+                orElseThrow(() -> new ItemNotFoundException("Region not found"));
     }
 
     private RegionDTO toDTO(RegionEntity entity) {

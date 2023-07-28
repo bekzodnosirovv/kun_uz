@@ -45,7 +45,7 @@ public class ArticleController {
         return ResponseEntity.ok("Article deleted !!!");
     }
 
-    @PutMapping(value = "/closed/publish/{id}/")
+    @PutMapping(value = "/closed/publish/{id}")
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id,
                                           @RequestParam("status") ArticleStatus status,
                                           HttpServletRequest request) {
@@ -101,7 +101,7 @@ public class ArticleController {
     public ResponseEntity<?> getByRegionPagination(@PathVariable("id") Integer regionId,
                                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(articleService.getByRegionPagination(regionId, page, size));
+        return ResponseEntity.ok(articleService.getByRegionPagination(regionId, page-1, size));
     }
 
     @GetMapping(value = "/lastFive/{id}")
@@ -116,17 +116,17 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getLastFiveByCategory(categoryId, page - 1, size));
     }
 
-    @GetMapping(value = "/view/{id}")
+    @PutMapping(value = "/view/{id}")
     public ResponseEntity<?> increaseViewCountById(@PathVariable("id") String articleId) {
         return ResponseEntity.ok(articleService.increaseViewCountById(articleId));
     }
 
-    @GetMapping(value = "/shared/{id}")
-    public ResponseEntity<?> increaseShareCountById(@PathVariable("id") String id) {
-        return ResponseEntity.ok(articleService.increaseShareCountById(id));
+    @PutMapping(value = "/shared/{id}")
+    public ResponseEntity<?> increaseShareCountById(@PathVariable("id") String articleId) {
+        return ResponseEntity.ok(articleService.increaseShareCountById(articleId));
     }
 
-    @GetMapping(value = "/filter")
+    @GetMapping(value = "/closed/filter")
     public ResponseEntity<?> filter(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                     @RequestBody ArticleFilterDTO filterDTO,

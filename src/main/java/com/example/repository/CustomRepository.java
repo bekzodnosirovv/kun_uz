@@ -114,6 +114,10 @@ public class CustomRepository {
             whereQuery.append(" and s.id =:id");
             params.put("id", filterDTO.getId());
         }
+        if (filterDTO.getTitle() != null) {
+            whereQuery.append(" and s.title like :title");
+            params.put("title", "%"+filterDTO.getTitle()+"%");
+        }
         if (filterDTO.getRegionId() != null) {
             whereQuery.append(" and s.regionId =:regionId");
             params.put("regionId", filterDTO.getRegionId());
@@ -134,7 +138,7 @@ public class CustomRepository {
             whereQuery.append(" and s.publishedDate >=:publishedDateFrom");
             params.put("publishedDateFrom", LocalDateTime.of(filterDTO.getCreatedDateFrom(), LocalTime.MIN));
         }
-        if (filterDTO.getCreatedDateTo() != null) {
+        if (filterDTO.getPublishedDateTo() != null) {
             whereQuery.append(" and s.publishedDate <=:publishedDateTo");
             params.put("publishedDateTo", LocalDateTime.of(filterDTO.getPublishedDateTo(), LocalTime.MAX));
         }
@@ -150,6 +154,7 @@ public class CustomRepository {
             whereQuery.append(" and s.status =:status");
             params.put("status", filterDTO.getStatus());
         }
+        whereQuery.append(" and visible=true");
         Query selectQuery = entityManager.createQuery(selectQueryBuilder.append(whereQuery).toString());
         selectQuery.setFirstResult(page * size);
         selectQuery.setMaxResults(size);

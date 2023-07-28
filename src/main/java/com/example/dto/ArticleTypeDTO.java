@@ -21,9 +21,4 @@ public class ArticleTypeDTO {
     private String nameEn;
     private Boolean visible;
     private LocalDateTime createdDate;
-
-    public ArticleTypeDTO(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 }

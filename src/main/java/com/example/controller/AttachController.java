@@ -22,6 +22,7 @@ public class AttachController {
 
     @PostMapping(value = "/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
+
         return ResponseEntity.ok().body(attachService.save(file));
     }
 
@@ -37,9 +38,7 @@ public class AttachController {
 
     @GetMapping(value = "/download/{fileName}")
     public ResponseEntity<?> download(@PathVariable("fileName") String fileName) {
-        Resource file = attachService.download(fileName);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        return attachService.download(fileName);
 
     }
 

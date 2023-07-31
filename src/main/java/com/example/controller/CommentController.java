@@ -20,7 +20,7 @@ public class CommentController {
     @PostMapping(value = "closed")
     public ResponseEntity<?> create(@RequestBody CommentDTO dto,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, (ProfileRole) null);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
         return ResponseEntity.ok(commentService.create(jwtDTO.getId(), dto));
     }
 
@@ -28,14 +28,14 @@ public class CommentController {
     public ResponseEntity<?> update(@PathVariable("id") String commentId,
                                     @RequestBody CommentDTO dto,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, (ProfileRole) null);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
         return ResponseEntity.ok(commentService.update(commentId, jwtDTO.getId(), dto));
     }
 
     @DeleteMapping(value = "/closed/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") String commentId,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, (ProfileRole) null);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
         commentService.delete(jwtDTO, commentId);
         return ResponseEntity.ok("Deleted !!!");
     }
@@ -45,7 +45,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getListByArticleId(articleId));
     }
 
-    @GetMapping(value = "/closed/get/pagination")
+    @GetMapping(value = "/closed/page")
     public ResponseEntity<?> getPagination(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                            HttpServletRequest request) {
@@ -54,8 +54,8 @@ public class CommentController {
     }
 
     @GetMapping(value = "/closed/filter")
-    public ResponseEntity<?> filter(@RequestParam("page") Integer page,
-                                    @RequestParam("size") Integer size,
+    public ResponseEntity<?> filter(@RequestParam(value = "page",defaultValue = "1") Integer page,
+                                    @RequestParam(value = "size",defaultValue = "10") Integer size,
                                     @RequestBody CommentFilterDTO filterDTO,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);

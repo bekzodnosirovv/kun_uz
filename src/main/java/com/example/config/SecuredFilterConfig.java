@@ -22,6 +22,7 @@ public class SecuredFilterConfig {
         bean.addUrlPatterns("/api/v1/articleType/admin/*");
         bean.addUrlPatterns("/api/v1/attach/closed/*");
         bean.addUrlPatterns("/api/v1/comment/closed/*");
+        bean.addUrlPatterns("/api/v1/email/history/admin/*");
 
         return bean;
     }

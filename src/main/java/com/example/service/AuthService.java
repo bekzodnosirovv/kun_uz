@@ -1,8 +1,6 @@
 package com.example.service;
 
-import com.example.dto.ApiResponseDTO;
-import com.example.dto.AuthDTO;
-import com.example.dto.ProfileDTO;
+import com.example.dto.*;
 import com.example.entity.ProfileEntity;
 import com.example.enums.ProfileRole;
 import com.example.enums.ProfileStatus;
@@ -13,6 +11,7 @@ import com.example.util.JWTUtil;
 import com.example.util.MD5Util;
 import com.example.util.PhoneIsValidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,28 +23,46 @@ public class AuthService {
     private ProfileRepository profileRepository;
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private MailSenderService mailSenderService;
 
-    public ProfileDTO registration(ProfileDTO dto) {
-        userIsValid(dto); // check dto
-        if (profileService.getByEmail(dto.getEmail()) != null) { // check email
-            throw new ItemNotFoundException("Email already exists.");
-        }
-        if (profileService.getByPhone(dto.getPhone()) != null) { // check phone
-            throw new ItemNotFoundException("Phone already exists.");
+    @Value("${server.url}")
+    private String serverUrl;
+
+
+    public ApiResponseDTO registration(RegDTO dto) {
+        // check
+        ProfileEntity profile = profileService.getByEmail(dto.getEmail());
+        if (profile != null) {
+            if (profile.getStatus().equals(ProfileStatus.REGISTRATION)) {
+                profileRepository.delete(profile);
+            } else return new ApiResponseDTO(false, "Email already exists.");
         }
         ProfileEntity entity = new ProfileEntity();
         entity.setName(dto.getName());
         entity.setSurname(dto.getSurname());
         entity.setEmail(dto.getEmail());
         entity.setPassword(MD5Util.encode(dto.getPassword()));
-        entity.setPhone(dto.getPhone());
         entity.setRole(ProfileRole.USER);
-        entity.setStatus(ProfileStatus.ACTIVE);
-        profileRepository.save(entity); // save
-        // response dto
-        dto.setId(entity.getId());
-        return dto;
+        entity.setStatus(ProfileStatus.REGISTRATION);
+        profileRepository.save(entity);
+        mailSenderService.sendEmailVerification(entity);
+        return new ApiResponseDTO(true, "The verification link was send to email.");
     }
+
+    public ApiResponseDTO emailVerification(String jwt) {
+        JwtDTO jwtDTO = JWTUtil.decodeEmailJwt(jwt);
+        ProfileEntity entity = profileService.getById(jwtDTO.getId());
+
+        if (!entity.getStatus().equals(ProfileStatus.REGISTRATION)) {
+            throw new AppBadRequestException("Wrong status");
+        }
+
+        entity.setStatus(ProfileStatus.ACTIVE);
+        profileRepository.save(entity); // update
+        return new ApiResponseDTO(true, "Registration completed");
+    }
+
 
     public ApiResponseDTO login(AuthDTO authDTO) {
         ProfileEntity entity = profileService.getByPhone(authDTO.getPhone());

@@ -27,6 +27,7 @@ public class CommentService {
 
     public CommentDTO create(Integer profileId, CommentDTO dto) {
         if (dto.getContent() == null) throw new AppBadRequestException("Content required");
+        if (dto.getArticleId()==null) throw new AppBadRequestException("Article id required");
         // TODO checking
         CommentEntity entity = new CommentEntity();
         entity.setContent(dto.getContent());
@@ -87,8 +88,8 @@ public class CommentService {
     public CommentDTO getShortInfo(CommentEntity entity) {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(entity.getId());
+        commentDTO.setContent(entity.getContent());
         commentDTO.setCreatedDate(entity.getCreatedDate());
-        commentDTO.setUpdateDate(entity.getUpdateDate());
         // create profile dto
         ProfileDTO profileDTO = new ProfileDTO();
         profileDTO.setId(entity.getProfile().getId());

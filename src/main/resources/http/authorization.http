@@ -1,9 +1,12 @@
 ### registration
-POST http://localhost:8080/api/v1/auth/reg
+POST http://localhost:8080/api/v1/auth/registration
 Content-Type: application/json
 
 {
-
+  "name": "Ali",
+  "surname": "Aliyev",
+  "email": "bbbb@gmail.com",
+  "password": "123456"
 }
 
 ###  Get jwt token // login
@@ -11,6 +14,6 @@ POST http://localhost:8080/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "phone": "+998901234500",
-  "password": "000"
+  "phone": "+998901234567",
+  "password": "123"
 }

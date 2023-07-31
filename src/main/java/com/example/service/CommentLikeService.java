@@ -16,9 +16,11 @@ public class CommentLikeService {
 
     public boolean like(Integer profileId, CommentLikeDTO dto) {
         // check
-
-
-        CommentLikeEntity entity = new CommentLikeEntity();
+        CommentLikeEntity entity = get(profileId, dto.getCommentId());
+        if (entity != null) {
+            remove(profileId, dto.getCommentId());
+        }
+        entity = new CommentLikeEntity();
         entity.setProfileId(profileId);
         entity.setCommentId(dto.getCommentId());
         entity.setStatus(dto.getStatus());
@@ -29,7 +31,13 @@ public class CommentLikeService {
 
     public boolean dislike(Integer profileId, CommentLikeDTO dto) {
         // check
-        CommentLikeEntity entity = new CommentLikeEntity();
+
+        CommentLikeEntity entity = get(profileId, dto.getCommentId());
+        if (entity != null) {
+            remove(profileId, dto.getCommentId());
+        }
+
+        entity = new CommentLikeEntity();
         entity.setProfileId(profileId);
         entity.setCommentId(dto.getCommentId());
         entity.setStatus(dto.getStatus());
@@ -44,9 +52,9 @@ public class CommentLikeService {
         return effectRow == 1;
     }
 
-    public void get(Integer profileId, String commentId) {
+    public CommentLikeEntity get(Integer profileId, String commentId) {
         Optional<CommentLikeEntity> optional = commentLikeRepository.getByProfileIdAndCommentId(profileId, commentId);
-
+        return optional.orElse(null);
     }
 
 }

@@ -88,6 +88,7 @@ public class CustomRepository {
             whereQuery.append(" and s.createdDate <=:createdDateTo");
             params.put("createdDateTo", LocalDateTime.of(filterDTO.getCreatedDateTo(), LocalTime.MAX));
         }
+        whereQuery.append(" and visible=true");
 
         Query selectQuery = entityManager.createQuery(selectQueryBuilder.append(whereQuery).toString());
         selectQuery.setFirstResult(page * size);

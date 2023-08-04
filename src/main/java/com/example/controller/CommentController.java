@@ -7,6 +7,7 @@ import com.example.enums.ProfileRole;
 import com.example.service.CommentService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping(value = "closed")
-    public ResponseEntity<?> create(@RequestBody CommentDTO dto,
+    public ResponseEntity<?> create(@Valid @RequestBody CommentDTO dto,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
         return ResponseEntity.ok(commentService.create(jwtDTO.getId(), dto));
@@ -26,7 +27,7 @@ public class CommentController {
 
     @PutMapping(value = "/closed/{id}")
     public ResponseEntity<?> update(@PathVariable("id") String commentId,
-                                    @RequestBody CommentDTO dto,
+                                   @Valid @RequestBody CommentDTO dto,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
         return ResponseEntity.ok(commentService.update(commentId, jwtDTO.getId(), dto));

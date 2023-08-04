@@ -20,7 +20,7 @@ public class RegionService {
     private RegionRepository regionRepository;
 
     public RegionDTO create(Integer prtId, RegionDTO dto) {
-        isValidRegion(dto); // check
+
         RegionEntity entity = new RegionEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -33,7 +33,7 @@ public class RegionService {
     }
 
     public void update(Integer regionId, RegionDTO dto) {
-        isValidRegion(dto);  // TODO check ?
+
         RegionEntity entity = getById(regionId);
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -92,12 +92,5 @@ public class RegionService {
         dto.setVisible(entity.getVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
-    }
-
-    private void isValidRegion(RegionDTO dto) {
-        if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
-        if (dto.getNameUz() == null) throw new AppBadRequestException("Name uz required");
-        if (dto.getNameEn() == null) throw new AppBadRequestException("Name en required");
-        if (dto.getNameRu() == null) throw new AppBadRequestException("Name ru required");
     }
 }

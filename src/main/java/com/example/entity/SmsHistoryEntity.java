@@ -1,19 +1,23 @@
 package com.example.entity;
 
+import com.example.entity.superr.BaseEntity;
 import com.example.enums.SmsStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sms_history")
-public class SmsHistoryEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class SmsHistoryEntity extends BaseEntity {
+    @Column(name = "phone")
     private String phone;
+    @Column(name = "message")
     private String message;
+    @Column(name = "status")
+    @Enumerated(value = EnumType.STRING)
     private SmsStatus status;
 
 

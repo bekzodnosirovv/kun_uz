@@ -7,6 +7,7 @@ import com.example.enums.ProfileRole;
 import com.example.service.CategoryService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,15 +19,15 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/admin")
-    public ResponseEntity<?> create(@RequestBody CategoryDTO dto,
+    public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(categoryService.create(jwtDTO.getId(),dto));
+        return ResponseEntity.ok(categoryService.create(jwtDTO.getId(), dto));
     }
 
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
-                                    @RequestBody CategoryDTO dto,
+                                    @Valid @RequestBody CategoryDTO dto,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         categoryService.update(id, dto);

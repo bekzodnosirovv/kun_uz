@@ -3,6 +3,7 @@ package com.example.dto;
 import com.example.enums.ArticleStatus;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,14 +17,20 @@ import java.util.List;
 public class ArticleDTO {
 
     private String id;
+    @NotNull(message = "Title required")
     private String title;
+    @NotNull(message = "Description required")
     private String description;
+    @NotNull(message = "Content required")
     private String content;
     private String imageId;
+    @NotNull(message = "Region required")
     private Integer regionId;
+    @NotNull(message = "Category required")
     private Integer categoryId;
     private Integer moderatorId;
     private Integer publisherId;
+    @NotNull(message = "Article types required")
     private List<Integer> articleTypes;
     private ArticleStatus status;
     private LocalDateTime createdDate;

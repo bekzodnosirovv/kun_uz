@@ -22,7 +22,6 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public CategoryDTO create(Integer prtId, CategoryDTO dto) {
-        isValidCategory(dto); // check
         CategoryEntity entity = new CategoryEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -36,7 +35,6 @@ public class CategoryService {
     }
 
     public void update(Integer id, CategoryDTO dto) {
-        isValidCategory(dto); // TODO check ?
         CategoryEntity entity = getById(id);
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -95,12 +93,5 @@ public class CategoryService {
         dto.setVisible(entity.getVisible());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
-    }
-
-    private void isValidCategory(CategoryDTO dto) {
-        if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
-        if (dto.getNameUz() == null) throw new AppBadRequestException("Name uz required");
-        if (dto.getNameEn() == null) throw new AppBadRequestException("Name en required");
-        if (dto.getNameRu() == null) throw new AppBadRequestException("Name ru required");
     }
 }

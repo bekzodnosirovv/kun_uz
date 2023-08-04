@@ -16,22 +16,22 @@ public class CommentLikeController {
     @Autowired
     private CommentLikeService commentLikeService;
 
-    @PostMapping(value = "/like")
-    public ResponseEntity<?> like(@RequestBody CommentLikeDTO likeDTO,
+    @PostMapping(value = "/like/{commentId}")
+    public ResponseEntity<?> like(@PathVariable("commentId") String commentId,
                                   HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        return ResponseEntity.ok(commentLikeService.like(jwtDTO.getId(), likeDTO));
+        return ResponseEntity.ok(commentLikeService.like(jwtDTO.getId(), commentId));
     }
 
-    @PostMapping(value = "/dislike")
-    public ResponseEntity<?> dislike(@RequestBody CommentLikeDTO likeDTO,
+    @PostMapping(value = "/dislike/{commentId}")
+    public ResponseEntity<?> dislike(@PathVariable("commentId") String commentId,
                                      HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        return ResponseEntity.ok(commentLikeService.dislike(jwtDTO.getId(), likeDTO));
+        return ResponseEntity.ok(commentLikeService.dislike(jwtDTO.getId(), commentId));
     }
 
-    @DeleteMapping(value = "/remove")
-    public ResponseEntity<?> remove(@RequestParam("id") String commentId,
+    @DeleteMapping(value = "/remove/{commentId}")
+    public ResponseEntity<?> remove(@PathVariable("commentId") String commentId,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO=SecurityUtil.hasRole(request,null);
         return ResponseEntity.ok(commentLikeService.remove(jwtDTO.getId(),commentId));

@@ -36,7 +36,7 @@ public class ArticleService {
     private CustomRepository customRepository;
 
     public ArticleDTO create(Integer moderatorId, ArticleDTO dto) {
-        isValidArticle(dto); // check
+
         ArticleEntity entity = new ArticleEntity();
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
@@ -54,7 +54,7 @@ public class ArticleService {
     }
 
     public void update(String articleId, ArticleDTO dto, Integer moderatorId) {
-        isValidArticle(dto);  // TODO checking ?
+
         ArticleEntity entity = getById(articleId);
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
@@ -220,13 +220,6 @@ public class ArticleService {
                 orElseThrow(() -> new ItemNotFoundException("Article not found"));
     }
 
-    private void isValidArticle(ArticleDTO dto) {
-        if (dto.getTitle() == null) throw new AppBadRequestException("Title required");
-        if (dto.getDescription() == null) throw new AppBadRequestException("Description required");
-        if (dto.getContent() == null) throw new AppBadRequestException("Content required");
-        if (dto.getRegionId() == null) throw new AppBadRequestException("Region required");
-        if (dto.getCategoryId() == null) throw new AppBadRequestException("Category required");
-        if (dto.getArticleTypes() == null) throw new AppBadRequestException("Article type required");
-    }
+
 
 }

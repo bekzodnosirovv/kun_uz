@@ -5,7 +5,6 @@ import com.example.entity.ProfileEntity;
 import com.example.enums.ProfileRole;
 import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
-import com.example.exp.ItemNotFoundException;
 import com.example.repository.ProfileRepository;
 import com.example.util.JWTUtil;
 import com.example.util.MD5Util;
@@ -13,8 +12,6 @@ import com.example.util.PhoneIsValidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -25,13 +22,15 @@ public class AuthService {
     private ProfileService profileService;
     @Autowired
     private MailSenderService mailSenderService;
+    @Autowired
+    private SmsSenderService smsSenderService;
+
 
     @Value("${server.url}")
     private String serverUrl;
 
 
-    public ApiResponseDTO registration(RegDTO dto) {
-        // check
+    public ApiResponseDTO registrationEmail(RegEmailDTO dto) {
         ProfileEntity profile = profileService.getByEmail(dto.getEmail());
         if (profile != null) {
             if (profile.getStatus().equals(ProfileStatus.REGISTRATION)) {
@@ -50,6 +49,26 @@ public class AuthService {
         return new ApiResponseDTO(true, "The verification link was send to email.");
     }
 
+    public ApiResponseDTO registrationPhone(RegPhoneDTO dto) {
+        if (!PhoneIsValidUtil.checkPhone(dto.getPhone())) throw new AppBadRequestException("Phone in valid");
+        ProfileEntity profile = profileService.getByPhone(dto.getPhone());
+        if (profile != null) {
+            if (profile.getStatus().equals(ProfileStatus.REGISTRATION)) {
+                profileRepository.delete(profile);
+            } else return new ApiResponseDTO(false, "Phone already exists.");
+        }
+        ProfileEntity entity = new ProfileEntity();
+        entity.setName(dto.getName());
+        entity.setSurname(dto.getSurname());
+        entity.setPhone(dto.getPhone());
+        entity.setPassword(MD5Util.encode(dto.getPassword()));
+        entity.setRole(ProfileRole.USER);
+        entity.setStatus(ProfileStatus.REGISTRATION);
+        profileRepository.save(entity);
+        smsSenderService.sendPhoneVerification(entity.getPhone());
+        return new ApiResponseDTO(true, "A verification code has been sent to your phone.");
+    }
+
     public ApiResponseDTO emailVerification(String jwt) {
         JwtDTO jwtDTO = JWTUtil.decodeEmailJwt(jwt);
         ProfileEntity entity = profileService.getById(jwtDTO.getId());
@@ -63,8 +82,17 @@ public class AuthService {
         return new ApiResponseDTO(true, "Registration completed");
     }
 
+    public ApiResponseDTO phoneVerification(PhoneVerificationCode dto) {
+
+
+
+//        entity.setStatus(ProfileStatus.ACTIVE);
+//        profileRepository.save(entity); // update
+        return new ApiResponseDTO(true, "Registration completed");
+    }
 
     public ApiResponseDTO login(AuthDTO authDTO) {
+
         ProfileEntity entity = profileService.getByPhone(authDTO.getPhone());
         if (entity == null || !entity.getPassword().equals(MD5Util.encode(authDTO.getPassword()))) {
             return new ApiResponseDTO(false, "Login or Password not found");
@@ -83,26 +111,5 @@ public class AuthService {
         return new ApiResponseDTO(true, response);
     }
 
-    private void userIsValid(ProfileDTO dto) {
-        if (dto.getName() == null) {
-            throw new AppBadRequestException("Name required");
-        }
-        if (dto.getSurname() == null) {
-            throw new AppBadRequestException("Surname required");
-        }
-        if (dto.getEmail() == null) {
-            throw new AppBadRequestException("Email required");
-        }
-        if (dto.getPhone() == null) {
-            throw new AppBadRequestException("Phone required");
-        }
-        if (!PhoneIsValidUtil.checkPhone(dto.getPhone())) {
-            throw new AppBadRequestException("Phone number is invalid");
-        }
-        if (dto.getPassword() == null) {
-            throw new AppBadRequestException("Password required");
-        }
 
-
-    }
 }

@@ -7,6 +7,7 @@ import com.example.enums.ProfileRole;
 import com.example.service.RegionService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class RegionController {
 
 
     @PostMapping("/admin")
-    public ResponseEntity<?> create(@RequestBody RegionDTO dto,
+    public ResponseEntity<?> create(@Valid @RequestBody RegionDTO dto,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(regionService.create(jwtDTO.getId(), dto));
@@ -27,7 +28,7 @@ public class RegionController {
 
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
-                                    @RequestBody RegionDTO dto,
+                                   @Valid @RequestBody RegionDTO dto,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         regionService.update(id, dto);

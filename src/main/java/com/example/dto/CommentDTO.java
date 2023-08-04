@@ -1,6 +1,7 @@
 package com.example.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ public class CommentDTO {
     private LocalDateTime updateDate;
     private Integer profileId;
     private ProfileDTO profile;
+    @NotNull(message = "Content required")
     private String content;
     private String articleId;
     private ArticleDTO article;

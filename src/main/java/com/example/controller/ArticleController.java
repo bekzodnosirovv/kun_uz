@@ -9,6 +9,7 @@ import com.example.enums.ProfileRole;
 import com.example.service.ArticleService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class ArticleController {
     private ArticleService articleService;
 
     @PostMapping(value = "/closed")
-    public ResponseEntity<?> create(@RequestBody ArticleDTO dto,
+    public ResponseEntity<?> create(@Valid @RequestBody ArticleDTO dto,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
         return ResponseEntity.ok(articleService.create(jwtDTO.getId(), dto));

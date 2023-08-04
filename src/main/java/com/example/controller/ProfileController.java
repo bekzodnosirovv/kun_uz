@@ -8,6 +8,7 @@ import com.example.enums.ProfileRole;
 import com.example.service.ProfileService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PostMapping("/closed")
-    public ResponseEntity<?> create(@RequestBody ProfileDTO dto,
+    public ResponseEntity<?> create(@Valid @RequestBody ProfileDTO dto,
                                     HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(profileService.create(jwtDTO.getId(), dto));
@@ -28,14 +29,14 @@ public class ProfileController {
 
     @PutMapping("/closed/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
-                                    @RequestBody ProfileDTO dto,
+                                   @Valid @RequestBody ProfileDTO dto,
                                     HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok( profileService.update(id, dto));
     }
 
     @PutMapping("/closed/detail")
-    public ResponseEntity<?> updateProfileDetail(@RequestBody ProfileDTO dto,
+    public ResponseEntity<?> updateProfileDetail(@Valid @RequestBody ProfileDTO dto,
                                                  HttpServletRequest request) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
         profileService.updateProfileDetail(jwtDTO.getId(), dto);

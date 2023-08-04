@@ -23,7 +23,7 @@ public class ArticleTypeService {
     private ArticleTypeRepository articleTypeRepository;
 
     public ArticleTypeDTO create(Integer prtId, ArticleTypeDTO dto) {
-        isValidArticleType(dto); // check
+
         ArticleTypeEntity entity = new ArticleTypeEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -37,7 +37,7 @@ public class ArticleTypeService {
     }
 
     public void update(Integer typeId, ArticleTypeDTO dto) {
-        isValidArticleType(dto); // TODO check ?
+
         ArticleTypeEntity entity = getById(typeId);
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -93,10 +93,4 @@ public class ArticleTypeService {
         return dto;
     }
 
-    private void isValidArticleType(ArticleTypeDTO dto) {
-        if (dto.getOrderNumber() == null) throw new AppBadRequestException("Order number required");
-        if (dto.getNameUz() == null) throw new AppBadRequestException("Name uz required");
-        if (dto.getNameEn() == null) throw new AppBadRequestException("Name en required");
-        if (dto.getNameRu() == null) throw new AppBadRequestException("Name ru required");
-    }
 }

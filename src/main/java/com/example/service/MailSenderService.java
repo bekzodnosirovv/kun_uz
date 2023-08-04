@@ -53,9 +53,9 @@ public class MailSenderService {
                 String.format("<a href=\"%s\"> Click link to complete registration </a>", url) +
                 "</p>";
         sendMimeEmail(entity.getEmail(), builder);
+        emailHistoryService.save(entity.getEmail(), builder); // save history
         SendEmailThread sendEmailThread = new SendEmailThread(entity.getEmail(), builder, javaMailSender);
-        sendEmailThread.start();
-        emailHistoryService.save(entity.getEmail(), builder);
+        sendEmailThread.start(); // send
     }
 
 }

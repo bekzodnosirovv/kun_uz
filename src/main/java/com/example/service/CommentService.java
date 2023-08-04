@@ -26,9 +26,7 @@ public class CommentService {
     private CustomRepository customRepository;
 
     public CommentDTO create(Integer profileId, CommentDTO dto) {
-        if (dto.getContent() == null) throw new AppBadRequestException("Content required");
-        if (dto.getArticleId()==null) throw new AppBadRequestException("Article id required");
-        // TODO checking
+
         CommentEntity entity = new CommentEntity();
         entity.setContent(dto.getContent());
         entity.setArticleId(dto.getArticleId());
@@ -40,8 +38,8 @@ public class CommentService {
     }
 
     public CommentDTO update(String commentId, Integer profileId, CommentDTO dto) {
-        // TODO checking
-        CommentEntity entity = getById(commentId); // check
+
+        CommentEntity entity = getById(commentId);
         if (!entity.getProfileId().equals(profileId)) throw new AppBadRequestException("Comment not update");
         entity.setContent(dto.getContent());
         entity.setArticleId(dto.getArticleId());

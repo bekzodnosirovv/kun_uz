@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +22,11 @@ import java.util.List;
 public class ArticleController {
     @Autowired
     private ArticleService articleService;
-
+    @PreAuthorize("hasRole('MODERATOR')")
     @PostMapping(value = "/closed")
     public ResponseEntity<?> create(@Valid @RequestBody ArticleDTO dto,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_MODERATOR);
         return ResponseEntity.ok(articleService.create(jwtDTO.getId(), dto));
     }
 
@@ -33,7 +34,7 @@ public class ArticleController {
     public ResponseEntity<?> update(@RequestBody ArticleDTO dto,
                                     @PathVariable("id") String id,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_MODERATOR);
         articleService.update(id, dto, jwtDTO.getId());
         return ResponseEntity.ok("Update article !!!");
     }
@@ -41,7 +42,7 @@ public class ArticleController {
     @DeleteMapping(value = "/closed/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") String id,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_MODERATOR);
         articleService.delete(id);
         return ResponseEntity.ok("Article deleted !!!");
     }
@@ -50,7 +51,7 @@ public class ArticleController {
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id,
                                           @RequestParam("status") ArticleStatus status,
                                           HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.PUBLISHER);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_PUBLISHER);
         articleService.changeStatus(id, jwtDTO.getId(), status);
         return ResponseEntity.ok("Update article status");
     }
@@ -132,7 +133,7 @@ public class ArticleController {
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                     @RequestBody ArticleFilterDTO filterDTO,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.PUBLISHER);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_PUBLISHER);
         return ResponseEntity.ok(articleService.filter(filterDTO,page-1,size));
     }
 

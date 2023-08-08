@@ -21,7 +21,7 @@ public class CategoryController {
     @PostMapping("/admin")
     public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(categoryService.create(jwtDTO.getId(), dto));
     }
 
@@ -29,7 +29,7 @@ public class CategoryController {
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @Valid @RequestBody CategoryDTO dto,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         categoryService.update(id, dto);
         return ResponseEntity.ok("Category update !!!");
     }
@@ -37,14 +37,14 @@ public class CategoryController {
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         categoryService.delete(id);
         return ResponseEntity.ok("Category deleted !!!");
     }
 
     @GetMapping("/admin/all")
     public ResponseEntity<?> getAll(HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(categoryService.getAll());
     }
 

@@ -50,7 +50,7 @@ public class CommentController {
     public ResponseEntity<?> getPagination(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                            HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(commentService.getPagination(page-1, size));
     }
 
@@ -59,7 +59,7 @@ public class CommentController {
                                     @RequestParam(value = "size",defaultValue = "10") Integer size,
                                     @RequestBody CommentFilterDTO filterDTO,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(commentService.filter(page-1, size, filterDTO));
     }
 

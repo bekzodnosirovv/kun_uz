@@ -23,7 +23,7 @@ public class ProfileController {
     @PostMapping("/closed")
     public ResponseEntity<?> create(@Valid @RequestBody ProfileDTO dto,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(profileService.create(jwtDTO.getId(), dto));
     }
 
@@ -31,7 +31,7 @@ public class ProfileController {
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                    @Valid @RequestBody ProfileDTO dto,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok( profileService.update(id, dto));
     }
 
@@ -47,14 +47,14 @@ public class ProfileController {
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(profileService.getAll(page - 1, size));
     }
 
     @DeleteMapping("/closed/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         profileService.delete(id);
         return ResponseEntity.ok("Deleted profile !!!");
     }

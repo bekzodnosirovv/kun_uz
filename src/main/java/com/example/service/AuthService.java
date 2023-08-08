@@ -2,16 +2,22 @@ package com.example.service;
 
 import com.example.dto.*;
 import com.example.entity.ProfileEntity;
+import com.example.entity.SmsHistoryEntity;
 import com.example.enums.ProfileRole;
 import com.example.enums.ProfileStatus;
+import com.example.enums.SmsStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.repository.ProfileRepository;
+import com.example.repository.SmsHistoryRepository;
 import com.example.util.JWTUtil;
 import com.example.util.MD5Util;
 import com.example.util.PhoneIsValidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -24,6 +30,8 @@ public class AuthService {
     private MailSenderService mailSenderService;
     @Autowired
     private SmsSenderService smsSenderService;
+    @Autowired
+    private SmsHistoryRepository smsHistoryRepository;
 
 
     @Value("${server.url}")
@@ -42,7 +50,7 @@ public class AuthService {
         entity.setSurname(dto.getSurname());
         entity.setEmail(dto.getEmail());
         entity.setPassword(MD5Util.encode(dto.getPassword()));
-        entity.setRole(ProfileRole.USER);
+        entity.setRole(ProfileRole.ROLE_USER);
         entity.setStatus(ProfileStatus.REGISTRATION);
         profileRepository.save(entity);
         mailSenderService.sendEmailVerification(entity);
@@ -62,7 +70,7 @@ public class AuthService {
         entity.setSurname(dto.getSurname());
         entity.setPhone(dto.getPhone());
         entity.setPassword(MD5Util.encode(dto.getPassword()));
-        entity.setRole(ProfileRole.USER);
+        entity.setRole(ProfileRole.ROLE_USER);
         entity.setStatus(ProfileStatus.REGISTRATION);
         profileRepository.save(entity);
         smsSenderService.sendPhoneVerification(entity.getPhone());
@@ -76,18 +84,28 @@ public class AuthService {
         if (!entity.getStatus().equals(ProfileStatus.REGISTRATION)) {
             throw new AppBadRequestException("Wrong status");
         }
-
         entity.setStatus(ProfileStatus.ACTIVE);
         profileRepository.save(entity); // update
         return new ApiResponseDTO(true, "Registration completed");
     }
 
     public ApiResponseDTO phoneVerification(PhoneVerificationCode dto) {
-
-
-
-//        entity.setStatus(ProfileStatus.ACTIVE);
-//        profileRepository.save(entity); // update
+        Optional<SmsHistoryEntity> optional = smsHistoryRepository.findTop1ByPhoneAndStatusOrderByCreatedDateDesc(dto.getPhone(), SmsStatus.NEW);
+        if (optional.isEmpty()) throw new AppBadRequestException("The profile information is incorrect");
+        SmsHistoryEntity smsEntity = optional.get();
+        if (smsEntity.getCreatedDate().isBefore(LocalDateTime.now().minusMinutes(1))) {
+            return new ApiResponseDTO(false, "The deadline has expired");
+        }
+        if (!smsEntity.getMessage().equals(dto.getMessage())) {
+            return new ApiResponseDTO(false, "The entered code is incorrect");
+        }
+        ProfileEntity entity = profileService.getByPhone(dto.getPhone());
+        if (entity==null) throw new AppBadRequestException("The profile information is incorrect");
+        if (!entity.getStatus().equals(ProfileStatus.REGISTRATION)) {
+            throw new AppBadRequestException("Wrong status");
+        }
+        entity.setStatus(ProfileStatus.ACTIVE);
+        profileRepository.save(entity); // update
         return new ApiResponseDTO(true, "Registration completed");
     }
 
@@ -106,7 +124,7 @@ public class AuthService {
         response.setSurname(entity.getSurname());
         response.setRole(entity.getRole());
         response.setPhone(entity.getPhone());
-        response.setJwt(JWTUtil.encode(entity.getId(), entity.getRole())); // set jwt token
+        response.setJwt(JWTUtil.encode(entity.getPhone(), entity.getRole())); // set jwt token
         // response
         return new ApiResponseDTO(true, response);
     }

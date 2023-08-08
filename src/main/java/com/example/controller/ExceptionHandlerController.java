@@ -30,5 +30,10 @@ public class ExceptionHandlerController {
     private ResponseEntity<String> handler(AppMethodNotAllowedException e) {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handler(RuntimeException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
 
 }

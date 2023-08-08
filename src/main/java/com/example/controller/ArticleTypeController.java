@@ -21,7 +21,7 @@ public class ArticleTypeController {
     @PostMapping(value = "/admin")
     public ResponseEntity<?> create(@Valid @RequestBody ArticleTypeDTO dto,
                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(articleTypeService.create(jwtDTO.getId(),dto));
     }
 
@@ -29,7 +29,7 @@ public class ArticleTypeController {
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                    @Valid @RequestBody ArticleTypeDTO dto,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         articleTypeService.update(id, dto);
         return ResponseEntity.ok("Article type update !!!");
     }
@@ -37,7 +37,7 @@ public class ArticleTypeController {
     @DeleteMapping(value = "/admin/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         articleTypeService.delete(id);
         return ResponseEntity.ok("Article type deleted !!!");
     }
@@ -46,7 +46,7 @@ public class ArticleTypeController {
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
                                     HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(articleTypeService.getAll(page - 1, size));
     }
 

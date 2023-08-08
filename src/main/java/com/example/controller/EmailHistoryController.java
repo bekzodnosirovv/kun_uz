@@ -20,14 +20,14 @@ public class EmailHistoryController {
     @GetMapping(value = "/{email}")
     public ResponseEntity<?> get(@PathVariable("email") String email,
                                  HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(emailHistoryService.get(email));
     }
 
     @GetMapping(value = "/date")
     public ResponseEntity<?> getByDate(@RequestParam("date") LocalDate date,
                                        HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(emailHistoryService.getByDate(date));
     }
 
@@ -35,7 +35,7 @@ public class EmailHistoryController {
     public ResponseEntity<?> getPagination(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                            HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
         return ResponseEntity.ok(emailHistoryService.pagination(page - 1, size));
     }
 }

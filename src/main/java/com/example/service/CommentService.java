@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -53,7 +52,7 @@ public class CommentService {
     public void delete(JwtDTO jwtDTO, String commentId) {
         CommentEntity entity = getById(commentId); // check comment
         Integer profileId;
-        if (jwtDTO.getRole().equals(ProfileRole.ADMIN)) profileId = entity.getProfileId();
+        if (jwtDTO.getRole().equals(ProfileRole.ROLE_ADMIN)) profileId = entity.getProfileId();
         else profileId = jwtDTO.getId();
         int effectRow = commentRepository.delete(commentId, profileId); // update visible
         if (effectRow != 1) throw new AppBadRequestException("Comment not deleted");

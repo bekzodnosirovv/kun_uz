@@ -46,6 +46,9 @@ public class SendPhoneThread extends Thread {
         token = response.getBody();
         tokenLifeTime = LocalDateTime.now().plusDays(7);
     }
+
+
+
     public void okHttp(String phone) {
         if (token == null || tokenLifeTime.isAfter(LocalDateTime.now())) loginJwt();
         try {

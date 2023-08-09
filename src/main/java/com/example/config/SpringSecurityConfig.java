@@ -18,6 +18,9 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.UUID;
 
@@ -27,41 +30,26 @@ import java.util.UUID;
 public class SpringSecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
     public static String[] AUTH_WHITELIST = {"/api/v1/auth/**",
-            "/api/v1/news/**",
-            "/api/v1/region/lang",
-            "/api/v1/attach/**",
-            "/api/v1/article/public/*"};
+            "/api/v1/article/lastFive/**", "/api/v1/article/lastThree/**",
+            "/api/v1/article/lastEight/**", "/api/v1/article/*/lan**",
+            "/api/v1/article/lastFour/**", "/api/v1/article/mostRead/**",
+            "/api/v1/article/tagName/**", "/api/v1/article/typeAndRegion/**",
+            "/api/v1/article/region/**", "/api/v1/article/category/**",
+            "/api/v1/article/view/**", "/api/v1/article/shared/**",
+            "/api/v1/articleType/lan/**", "/api/v1/region/lan/**",
+            "/api/v1/category/lan/**", "/api/v1/comment/getList/**",
+            "/api/v1/comment/replyList/**"};
 
-//    @Bean
-//    public AuthenticationProvider authenticationProvider() {
-//        // authentication (login,password)
-//        String password = UUID.randomUUID().toString();
-//        System.out.println("User Password mazgi: " + password);
-//
-//        UserDetails user = User.builder()
-//                .username("user")
-//                .password("{noop}" + password)
-//                .roles("U SER")
-//                .build();
-//
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password("{noop}" + password)
-//                .roles("ADMIN")
-//                .build();
-//
-//        final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//        authenticationProvider.setUserDetailsService(new InMemoryUserDetailsManager(user, admin));
-//        return authenticationProvider;
-//    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         // authentication (login,password)
         final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+//        authenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
@@ -69,15 +57,20 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // authorization (ROLE)
         http
                 .authorizeHttpRequests((c) -> {
-                    c.requestMatchers("/api/v1/auth/**").permitAll()
-                            .requestMatchers("/api/v1/news/**").permitAll()
-                            .requestMatchers("/api/v1/region/admin", "/api/v1/region/admin/**").hasRole("ADMIN")
+                    c.requestMatchers(AUTH_WHITELIST).permitAll()
+                            .requestMatchers("/api/v1/attach/**").permitAll()
+                            .requestMatchers("/api/v1/articleLike/like/**").permitAll()
+                            .requestMatchers("/api/v1/articleLike/dislike/**").permitAll()
+                            .requestMatchers("/api/v1/articleLike/remove/**").permitAll()
+                            .requestMatchers("/api/v1/commentLike/like/**").permitAll()
+                            .requestMatchers("/api/v1/commentLike/dislike/**").permitAll()
+                            .requestMatchers("/api/v1/commentLike/remove/**").permitAll()
+                            .requestMatchers("/api/v1//api/v1/savedArticle/**").permitAll()
                             .anyRequest().authenticated();
                 }).
-                httpBasic(Customizer.withDefaults());
+                addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http.csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable);
         return http.build();
     }
@@ -88,9 +81,20 @@ public class SpringSecurityConfig {
             public String encode(CharSequence rawPassword) {
                 return rawPassword.toString();
             }
+
             @Override
             public boolean matches(CharSequence rawPassword, String encodedPassword) {
                 return MD5Util.encode(rawPassword.toString()).equals(encodedPassword);
+            }
+        };
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**");
             }
         };
     }

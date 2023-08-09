@@ -6,6 +6,7 @@ import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.RegionRepository;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,8 @@ public class RegionService {
     @Autowired
     private RegionRepository regionRepository;
 
-    public RegionDTO create(Integer prtId, RegionDTO dto) {
-
+    public RegionDTO create(RegionDTO dto) {
+        Integer prtId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         RegionEntity entity = new RegionEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -33,7 +34,6 @@ public class RegionService {
     }
 
     public void update(Integer regionId, RegionDTO dto) {
-
         RegionEntity entity = getById(regionId);
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());

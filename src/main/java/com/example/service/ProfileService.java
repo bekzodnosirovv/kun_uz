@@ -10,6 +10,7 @@ import com.example.repository.CustomRepository;
 import com.example.repository.ProfileRepository;
 import com.example.util.MD5Util;
 import com.example.util.PhoneIsValidUtil;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,8 +33,8 @@ public class ProfileService {
     private AttachRepository attachRepository;
 
 
-    public ProfileDTO create(Integer prtId, ProfileDTO dto) {
-        isValidProfile(dto);       // check
+    public ProfileDTO create(ProfileDTO dto) {
+        Integer prtId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         if (getByPhone(dto.getPhone()) != null) {         // check phone
             throw new ItemNotFoundException("Email already exists.");
         }
@@ -56,7 +57,6 @@ public class ProfileService {
     }
 
     public ProfileDTO update(Integer profileId, ProfileDTO dto) {
-        isValidProfile(dto); // check
         ProfileEntity entity = getById(profileId);
         entity.setName(dto.getName());
         entity.setSurname(dto.getSurname());
@@ -69,7 +69,8 @@ public class ProfileService {
         return dto;
     }
 
-    public void updateProfileDetail(Integer profileId, ProfileDTO dto) {
+    public void updateProfileDetail(ProfileDTO dto) {
+        Integer profileId=SpringSecurityUtil.getCurrentUser().getProfile().getId();
         if (dto.getName() == null) throw new AppBadRequestException("Name required");
         if (dto.getSurname() == null) throw new AppBadRequestException("Surname required"); //  check ?
         profileRepository.updateDetail(profileId, dto.getName(), dto.getSurname());
@@ -86,7 +87,8 @@ public class ProfileService {
         profileRepository.deletedById(profileId); // update visible
     }
 
-    public void updatePhoto(Integer profileId, String imageId) {
+    public void updatePhoto(String imageId) {
+        Integer profileId=SpringSecurityUtil.getCurrentUser().getProfile().getId();
         if (attachRepository.findById(imageId).isPresent()) throw new ItemNotFoundException("Image not upload");
         profileRepository.updatePhoto(profileId, imageId); // update photo
     }
@@ -130,32 +132,6 @@ public class ProfileService {
         return dto;
     }
 
-    private void isValidProfile(ProfileDTO dto) {
-        if (dto.getName() == null || dto.getName().isBlank()) {
-            throw new AppBadRequestException("Name required");
-        }
-        if (dto.getSurname() == null || dto.getSurname().isBlank()) {
-            throw new AppBadRequestException("Surname required");
-        }
-        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
-            throw new AppBadRequestException("Email required");
-        }
-        if (dto.getPhone() == null || dto.getPhone().isBlank()) {
-            throw new AppBadRequestException("Phone required");
-        }
-        if (!PhoneIsValidUtil.checkPhone(dto.getPhone())) {
-            throw new AppBadRequestException("Phone number is invalid");
-        }
-        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
-            throw new AppBadRequestException("Password required");
-        }
-        if (dto.getRole() == null) {
-            throw new AppBadRequestException("Profile role required");
-        }
-        if (dto.getStatus() == null) {
-            throw new AppBadRequestException("Status required");
-        }
-    }
 }
 
 

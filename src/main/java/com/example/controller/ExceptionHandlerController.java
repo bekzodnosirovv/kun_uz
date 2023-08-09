@@ -6,6 +6,7 @@ import com.example.exp.ItemNotFoundException;
 import com.example.exp.UnAuthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -30,6 +31,11 @@ public class ExceptionHandlerController {
     private ResponseEntity<String> handler(AppMethodNotAllowedException e) {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handler(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handler(RuntimeException e) {
         e.printStackTrace();

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,53 +21,42 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PostMapping("/closed")
-    public ResponseEntity<?> create(@Valid @RequestBody ProfileDTO dto,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
-        return ResponseEntity.ok(profileService.create(jwtDTO.getId(), dto));
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("")
+    public ResponseEntity<?> create(@Valid @RequestBody ProfileDTO dto) {
+        return ResponseEntity.ok(profileService.create(dto));
     }
-
-    @PutMapping("/closed/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
-                                   @Valid @RequestBody ProfileDTO dto,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
-        return ResponseEntity.ok( profileService.update(id, dto));
+                                    @Valid @RequestBody ProfileDTO dto) {
+        return ResponseEntity.ok(profileService.update(id, dto));
     }
-
-    @PutMapping("/closed/detail")
-    public ResponseEntity<?> updateProfileDetail(@Valid @RequestBody ProfileDTO dto,
-                                                 HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
-        profileService.updateProfileDetail(jwtDTO.getId(), dto);
+    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR','PUBLISHER','USER')")
+    @PutMapping("/detail")
+    public ResponseEntity<?> updateProfileDetail(@Valid @RequestBody ProfileDTO dto) {
+        profileService.updateProfileDetail(dto);
         return ResponseEntity.ok("Update profile detail !!!");
     }
-
-    @GetMapping("/closed/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
         return ResponseEntity.ok(profileService.getAll(page - 1, size));
     }
-
-    @DeleteMapping("/closed/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         profileService.delete(id);
         return ResponseEntity.ok("Deleted profile !!!");
     }
-
-    @PutMapping("/closed/photo/{id}")
-    public ResponseEntity<?> updatePhoto(@PathVariable("id") String photoId,
-                                         HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        profileService.updatePhoto(jwtDTO.getId(), photoId);
+    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR','PUBLISHER','USER')")
+    @PutMapping("/photo/{id}")
+    public ResponseEntity<?> updatePhoto(@PathVariable("id") String photoId) {
+        profileService.updatePhoto(photoId);
         return ResponseEntity.ok("Photo update !!!");
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/filter")
     public ResponseEntity<?> filter(@RequestBody ProfileFilterDTO filterDTO) {
         return ResponseEntity.ok(profileService.filter(filterDTO));

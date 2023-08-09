@@ -8,6 +8,7 @@ import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.CategoryRepository;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,8 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public CategoryDTO create(Integer prtId, CategoryDTO dto) {
+    public CategoryDTO create( CategoryDTO dto) {
+        Integer prtId= SpringSecurityUtil.getCurrentUser().getProfile().getId();
         CategoryEntity entity = new CategoryEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());

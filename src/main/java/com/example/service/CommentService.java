@@ -2,11 +2,13 @@ package com.example.service;
 
 import com.example.dto.*;
 import com.example.entity.CommentEntity;
+import com.example.entity.ProfileEntity;
 import com.example.enums.ProfileRole;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.CommentRepository;
 import com.example.repository.CustomRepository;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,8 +26,8 @@ public class CommentService {
     @Autowired
     private CustomRepository customRepository;
 
-    public CommentDTO create(Integer profileId, CommentDTO dto) {
-
+    public CommentDTO create(CommentDTO dto) {
+        Integer profileId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         CommentEntity entity = new CommentEntity();
         entity.setContent(dto.getContent());
         entity.setArticleId(dto.getArticleId());
@@ -36,8 +38,8 @@ public class CommentService {
         return dto;
     }
 
-    public CommentDTO update(String commentId, Integer profileId, CommentDTO dto) {
-
+    public CommentDTO update(String commentId, CommentDTO dto) {
+        Integer profileId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         CommentEntity entity = getById(commentId);
         if (!entity.getProfileId().equals(profileId)) throw new AppBadRequestException("Comment not update");
         entity.setContent(dto.getContent());
@@ -49,11 +51,12 @@ public class CommentService {
         return dto;
     }
 
-    public void delete(JwtDTO jwtDTO, String commentId) {
+    public void delete( String commentId) {
         CommentEntity entity = getById(commentId); // check comment
+        ProfileEntity profile=SpringSecurityUtil.getCurrentUser().getProfile();
         Integer profileId;
-        if (jwtDTO.getRole().equals(ProfileRole.ROLE_ADMIN)) profileId = entity.getProfileId();
-        else profileId = jwtDTO.getId();
+        if (profile.getRole().equals(ProfileRole.ROLE_ADMIN)) profileId = entity.getProfileId();
+        else profileId = profile.getId();
         int effectRow = commentRepository.delete(commentId, profileId); // update visible
         if (effectRow != 1) throw new AppBadRequestException("Comment not deleted");
     }

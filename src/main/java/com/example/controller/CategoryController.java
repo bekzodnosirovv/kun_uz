@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,33 +19,27 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping("/admin")
-    public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
-        return ResponseEntity.ok(categoryService.create(jwtDTO.getId(), dto));
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("")
+    public ResponseEntity<?> create(@Valid @RequestBody CategoryDTO dto) {
+        return ResponseEntity.ok(categoryService.create(dto));
     }
-
-    @PutMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
-                                    @Valid @RequestBody CategoryDTO dto,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+                                    @Valid @RequestBody CategoryDTO dto) {
         categoryService.update(id, dto);
         return ResponseEntity.ok("Category update !!!");
     }
-
-    @DeleteMapping("/admin/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         categoryService.delete(id);
         return ResponseEntity.ok("Category deleted !!!");
     }
-
-    @GetMapping("/admin/all")
-    public ResponseEntity<?> getAll(HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(categoryService.getAll());
     }
 

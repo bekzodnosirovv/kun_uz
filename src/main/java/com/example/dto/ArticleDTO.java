@@ -32,6 +32,9 @@ public class ArticleDTO {
     private Integer publisherId;
     @NotNull(message = "Article types required")
     private List<Integer> articleTypes;
+    @NotNull(message = "Article tags required")
+    private List<Integer> articleTags;
+    private List<TagDTO> tagList;
     private ArticleStatus status;
     private LocalDateTime createdDate;
     private LocalDateTime publishedDate;

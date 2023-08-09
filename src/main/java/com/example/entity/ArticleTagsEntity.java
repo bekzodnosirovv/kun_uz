@@ -10,6 +10,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "article_tags")
 public class ArticleTagsEntity extends BaseIdentityEntity {
+
     @Column(name = "article_id")
     private String articleId;
 

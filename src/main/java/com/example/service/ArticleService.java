@@ -8,6 +8,7 @@ import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.mapper.ArticleShortMapper;
 import com.example.repository.*;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,10 +34,13 @@ public class ArticleService {
     @Autowired
     private ArticleTypesService articleTypesService;
     @Autowired
+    private ArticleTagsService articleTagsService;
+    @Autowired
     private CustomRepository customRepository;
 
-    public ArticleDTO create(Integer moderatorId, ArticleDTO dto) {
 
+    public ArticleDTO create(ArticleDTO dto) {
+        Integer moderatorId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         ArticleEntity entity = new ArticleEntity();
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
@@ -48,13 +52,14 @@ public class ArticleService {
         entity.setStatus(ArticleStatus.NOT_PUBLISHED);
         articleRepository.save(entity); // save
         articleTypesService.create(entity.getId(), dto.getArticleTypes()); // save types
+        articleTagsService.create(entity.getId(), dto.getArticleTags()); // save tags
         // response dto
         dto.setId(entity.getId());
         return dto;
     }
 
-    public void update(String articleId, ArticleDTO dto, Integer moderatorId) {
-
+    public void update(String articleId, ArticleDTO dto) {
+        Integer moderatorId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         ArticleEntity entity = getById(articleId);
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
@@ -66,6 +71,7 @@ public class ArticleService {
         entity.setStatus(ArticleStatus.NOT_PUBLISHED);
         articleRepository.save(entity); // update
         articleTypesService.merge(entity.getId(), dto.getArticleTypes()); // save types
+        articleTagsService.merge(entity.getId(), dto.getArticleTags()); // save tags
     }
 
     public void delete(String articleId) {
@@ -74,7 +80,8 @@ public class ArticleService {
     }
 
 
-    public void changeStatus(String articleId, Integer publisherId, ArticleStatus status) {
+    public void changeStatus(String articleId, ArticleStatus status) {
+        Integer publisherId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         getById(articleId); // check article
         articleRepository.changeStatus(articleId, status, LocalDateTime.now(), publisherId); // update status
     }
@@ -142,14 +149,14 @@ public class ArticleService {
     // get region id pagination
     public PageImpl<ArticleDTO> getByRegionPagination(Integer regionId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ArticleEntity> entityPage = articleRepository.findAllByRegionIdAndStatusAndVisibleTrue(pageable,regionId, ArticleStatus.PUBLISHED);
+        Page<ArticleEntity> entityPage = articleRepository.findAllByRegionIdAndStatusAndVisibleTrue(pageable, regionId, ArticleStatus.PUBLISHED);
         return new PageImpl<>(entityPage.getContent().stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList(),
                 pageable, entityPage.getTotalElements());
     }
 
     // get last 5 by category id
     public List<ArticleDTO> getLastFiveByCategory(Integer categoryId) {
-        List<ArticleEntity> entityList = articleRepository.findTop5ByStatusAndCategoryIdAndVisibleTrue(ArticleStatus.PUBLISHED,categoryId);
+        List<ArticleEntity> entityList = articleRepository.findTop5ByStatusAndCategoryIdAndVisibleTrue(ArticleStatus.PUBLISHED, categoryId);
         if (entityList.isEmpty()) return new LinkedList<>();
         return entityList.stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList();
     }
@@ -157,7 +164,7 @@ public class ArticleService {
     // get article by category pagination
     public PageImpl<ArticleDTO> getLastFiveByCategory(Integer categoryId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ArticleEntity> entityPage = articleRepository.findAllByCategoryIdAndStatusAndVisibleTrue(pageable,categoryId, ArticleStatus.PUBLISHED);
+        Page<ArticleEntity> entityPage = articleRepository.findAllByCategoryIdAndStatusAndVisibleTrue(pageable, categoryId, ArticleStatus.PUBLISHED);
         return new PageImpl<>(entityPage.getContent().stream().map(e -> getShortInfo(e.getId(), e.getTitle(), e.getDescription(), e.getImage_id(), e.getPublishedDate())).toList(),
                 pageable, entityPage.getTotalElements());
     }
@@ -194,9 +201,9 @@ public class ArticleService {
         RegionDTO regionDTO = regionService.getDTO(entity.getRegion(), lan);
         fullInfo.setRegionDTO(regionDTO); // set region
         // get category
-        CategoryDTO categoryDTO = categoryService.getDTO(entity.getCategory(),lan);
+        CategoryDTO categoryDTO = categoryService.getDTO(entity.getCategory(), lan);
         fullInfo.setCategoryDTO(categoryDTO); // set category
-
+        fullInfo.setTagList(articleTagsService.get(entity.getId()));
 
         // TODO fullInfo set like count and tag list
 
@@ -219,7 +226,6 @@ public class ArticleService {
         return articleRepository.findByIdAndVisibleTrue(articleId).
                 orElseThrow(() -> new ItemNotFoundException("Article not found"));
     }
-
 
 
 }

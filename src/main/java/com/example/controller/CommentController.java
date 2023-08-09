@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,26 +19,23 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @PostMapping(value = "closed")
-    public ResponseEntity<?> create(@Valid @RequestBody CommentDTO dto,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        return ResponseEntity.ok(commentService.create(jwtDTO.getId(), dto));
+    @PreAuthorize("hasAnyRole('ADMIN','MODERTOR','PUBLISHER','USER')")
+    @PostMapping(value = "")
+    public ResponseEntity<?> create(@Valid @RequestBody CommentDTO dto) {
+        return ResponseEntity.ok(commentService.create(dto));
     }
 
-    @PutMapping(value = "/closed/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','MODERTOR','PUBLISHER','USER')")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<?> update(@PathVariable("id") String commentId,
-                                   @Valid @RequestBody CommentDTO dto,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
-        return ResponseEntity.ok(commentService.update(commentId, jwtDTO.getId(), dto));
+                                    @Valid @RequestBody CommentDTO dto) {
+        return ResponseEntity.ok(commentService.update(commentId, dto));
     }
 
-    @DeleteMapping(value = "/closed/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") String commentId,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request,  null);
-        commentService.delete(jwtDTO, commentId);
+    @PreAuthorize("hasAnyRole('ADMIN','MODERTOR','PUBLISHER','USER')")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") String commentId) {
+        commentService.delete(commentId);
         return ResponseEntity.ok("Deleted !!!");
     }
 
@@ -46,21 +44,18 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getListByArticleId(articleId));
     }
 
-    @GetMapping(value = "/closed/page")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/page")
     public ResponseEntity<?> getPagination(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                           HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
-        return ResponseEntity.ok(commentService.getPagination(page-1, size));
+                                           @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(commentService.getPagination(page - 1, size));
     }
-
-    @GetMapping(value = "/closed/filter")
-    public ResponseEntity<?> filter(@RequestParam(value = "page",defaultValue = "1") Integer page,
-                                    @RequestParam(value = "size",defaultValue = "10") Integer size,
-                                    @RequestBody CommentFilterDTO filterDTO,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
-        return ResponseEntity.ok(commentService.filter(page-1, size, filterDTO));
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/filter")
+    public ResponseEntity<?> filter(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                    @RequestBody CommentFilterDTO filterDTO) {
+        return ResponseEntity.ok(commentService.filter(page - 1, size, filterDTO));
     }
 
     @GetMapping(value = "/replyList/{id}")

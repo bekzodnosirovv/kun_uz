@@ -9,6 +9,7 @@ import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.ArticleTypeRepository;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ public class ArticleTypeService {
     @Autowired
     private ArticleTypeRepository articleTypeRepository;
 
-    public ArticleTypeDTO create(Integer prtId, ArticleTypeDTO dto) {
-
+    public ArticleTypeDTO create(ArticleTypeDTO dto) {
+        Integer prtId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         ArticleTypeEntity entity = new ArticleTypeEntity();
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -37,7 +38,6 @@ public class ArticleTypeService {
     }
 
     public void update(Integer typeId, ArticleTypeDTO dto) {
-
         ArticleTypeEntity entity = getById(typeId);
         entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameUz(dto.getNameUz());
@@ -63,6 +63,7 @@ public class ArticleTypeService {
         List<ArticleTypeEntity> entities = articleTypeRepository.findAllByVisibleTrueOrderByOrderNumber();
         return entities.stream().map(entity -> getDTO(entity, lan)).toList();
     }
+
     public ArticleTypeDTO getDTO(ArticleTypeEntity entity, Language lan) {
         if (entity == null) return null;
         ArticleTypeDTO dto = new ArticleTypeDTO();
@@ -75,8 +76,9 @@ public class ArticleTypeService {
         }
         return dto;
     }
+
     public ArticleTypeEntity getById(Integer typeId) {
-        if (typeId==null) throw new ItemNotFoundException("Article type not found");
+        if (typeId == null) throw new ItemNotFoundException("Article type not found");
         return articleTypeRepository.findById(typeId).
                 orElseThrow(() -> new ItemNotFoundException("Article type not found."));
     }

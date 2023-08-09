@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,35 +19,29 @@ public class ArticleTypeController {
     @Autowired
     private ArticleTypeService articleTypeService;
 
-    @PostMapping(value = "/admin")
-    public ResponseEntity<?> create(@Valid @RequestBody ArticleTypeDTO dto,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
-        return ResponseEntity.ok(articleTypeService.create(jwtDTO.getId(),dto));
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "")
+    public ResponseEntity<?> create(@Valid @RequestBody ArticleTypeDTO dto) {
+        return ResponseEntity.ok(articleTypeService.create(dto));
     }
 
-    @PutMapping(value = "/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
-                                   @Valid @RequestBody ArticleTypeDTO dto,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+                                    @Valid @RequestBody ArticleTypeDTO dto) {
         articleTypeService.update(id, dto);
         return ResponseEntity.ok("Article type update !!!");
     }
-
-    @DeleteMapping(value = "/admin/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         articleTypeService.delete(id);
         return ResponseEntity.ok("Article type deleted !!!");
     }
-
-    @GetMapping(value = "/admin/all/page")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/all/page")
     public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_ADMIN);
+                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
         return ResponseEntity.ok(articleTypeService.getAll(page - 1, size));
     }
 

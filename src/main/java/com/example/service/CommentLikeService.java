@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.entity.CommentLikeEntity;
 import com.example.enums.LikeStatus;
 import com.example.repository.CommentLikeRepository;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,11 @@ public class CommentLikeService {
     @Autowired
     private CommentLikeRepository commentLikeRepository;
 
-    public boolean like(Integer profileId, String  commentId) {
-        if (commentId==null) return false; // check
+    public boolean like(String commentId) {
+        Integer profileId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
+        if (commentId == null) return false; // check
         CommentLikeEntity entity = get(profileId, commentId);
-        if (entity != null) remove(profileId, commentId);
+        if (entity != null) remove(commentId);
 
         entity = new CommentLikeEntity();
         entity.setProfileId(profileId);
@@ -28,10 +30,11 @@ public class CommentLikeService {
         return true;
     }
 
-    public boolean dislike(Integer profileId, String  commentId) {
-        if (commentId==null) return false; // check
-        CommentLikeEntity entity = get(profileId,commentId);
-        if (entity != null) remove(profileId, commentId);
+    public boolean dislike(String commentId) {
+        Integer profileId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
+        if (commentId == null) return false; // check
+        CommentLikeEntity entity = get(profileId, commentId);
+        if (entity != null) remove(commentId);
 
         entity = new CommentLikeEntity();
         entity.setProfileId(profileId);
@@ -42,7 +45,8 @@ public class CommentLikeService {
         return true;
     }
 
-    public boolean remove(Integer profileId, String commentId) {
+    public boolean remove(String commentId) {
+        Integer profileId = SpringSecurityUtil.getCurrentUser().getProfile().getId();
         if (profileId == null || commentId == null) return false;
         int effectRow = commentLikeRepository.remove(profileId, commentId);
         return effectRow == 1;

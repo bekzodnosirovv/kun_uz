@@ -83,7 +83,7 @@ GET http://localhost:8080/api/v1/article/lastFive/3
 
 
 ### Get by category pagination
-GET http://localhost:8080/api/v1/article/byCategory/1/page
+GET http://localhost:8080/api/v1/article/category/1
 
 
 
@@ -98,7 +98,7 @@ PUT http://localhost:8080/api/v1/article/shared/369eeecf-4365-4baf-a1ba-77e88082
 
 
 ### Filter
-GET http://localhost:8080/api/v1/article/closed/filter
+GET http://localhost:8080/api/v1/article/filter
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2OTA1Mzg1NzEsImlkIjo2LCJyb2xlIjoiUFVCTElTSEVSIiwiZXhwIjoxNjkwNjI0OTcxLCJpc3MiOiJrdW4gdXogdGVzdCBwb3J0YWxpIn0.gihtFD3-A2ABRqxk9nFeZF3ABumYE0Nlx5UFaO-jb8Y03A1GxuY5q2X-HaOLKy6ZiNgP3sAOhcbpjsJ2eW_5Ag
 

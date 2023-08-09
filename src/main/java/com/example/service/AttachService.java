@@ -73,7 +73,6 @@ public class AttachService {
             byte[] bytes = file.getBytes();
             Path path = Paths.get(getUrl(pathFolder, key, extension));
             Files.write(path, bytes);
-
             AttachEntity entity = new AttachEntity();
             entity.setId(key);
             entity.setPath(pathFolder);

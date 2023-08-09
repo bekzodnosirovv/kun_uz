@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "name": "Alijon",
   "surname": "Aliyev",
-  "phone": "+998990000001",
+  "phone": "+998990000011",
   "password": "123456"
 }
 

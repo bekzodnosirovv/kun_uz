@@ -22,39 +22,34 @@ import java.util.List;
 public class ArticleController {
     @Autowired
     private ArticleService articleService;
+
     @PreAuthorize("hasRole('MODERATOR')")
-    @PostMapping(value = "/closed")
-    public ResponseEntity<?> create(@Valid @RequestBody ArticleDTO dto,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_MODERATOR);
-        return ResponseEntity.ok(articleService.create(jwtDTO.getId(), dto));
+    @PostMapping(value = "")
+    public ResponseEntity<?> create(@Valid @RequestBody ArticleDTO dto) {
+        return ResponseEntity.ok(articleService.create(dto));
     }
 
-    @PutMapping(value = "/closed/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<?> update(@RequestBody ArticleDTO dto,
-                                    @PathVariable("id") String id,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_MODERATOR);
-        articleService.update(id, dto, jwtDTO.getId());
+                                    @PathVariable("id") String id) {
+        articleService.update(id, dto);
         return ResponseEntity.ok("Update article !!!");
     }
-
-    @DeleteMapping(value = "/closed/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") String id,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_MODERATOR);
+    @PreAuthorize("hasRole('MODERATOR')")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") String id) {
         articleService.delete(id);
         return ResponseEntity.ok("Article deleted !!!");
     }
-
-    @PutMapping(value = "/closed/publish/{id}")
+    @PreAuthorize("hasRole('PUBLISHER')")
+    @PutMapping(value = "/publish/{id}")
     public ResponseEntity<?> changeStatus(@PathVariable("id") String id,
-                                          @RequestParam("status") ArticleStatus status,
-                                          HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ROLE_PUBLISHER);
-        articleService.changeStatus(id, jwtDTO.getId(), status);
+                                          @RequestParam("status") ArticleStatus status) {
+        articleService.changeStatus(id, status);
         return ResponseEntity.ok("Update article status");
     }
+
 
     @GetMapping(value = "/lastFive")
     public ResponseEntity<?> getLastFiveByType(@RequestParam("type") Integer id) {
@@ -103,7 +98,7 @@ public class ArticleController {
     public ResponseEntity<?> getByRegionPagination(@PathVariable("id") Integer regionId,
                                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                    @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return ResponseEntity.ok(articleService.getByRegionPagination(regionId, page-1, size));
+        return ResponseEntity.ok(articleService.getByRegionPagination(regionId, page - 1, size));
     }
 
     @GetMapping(value = "/lastFive/{id}")
@@ -127,14 +122,12 @@ public class ArticleController {
     public ResponseEntity<?> increaseShareCountById(@PathVariable("id") String articleId) {
         return ResponseEntity.ok(articleService.increaseShareCountById(articleId));
     }
-
-    @GetMapping(value = "/closed/filter")
+    @PreAuthorize("hasRole('PUBLISHER')")
+    @GetMapping(value = "/filter")
     public ResponseEntity<?> filter(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                    @RequestBody ArticleFilterDTO filterDTO,
-                                    HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ROLE_PUBLISHER);
-        return ResponseEntity.ok(articleService.filter(filterDTO,page-1,size));
+                                    @RequestBody ArticleFilterDTO filterDTO) {
+        return ResponseEntity.ok(articleService.filter(filterDTO, page - 1, size));
     }
 
 }

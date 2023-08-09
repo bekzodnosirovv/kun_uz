@@ -13,6 +13,10 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
     private ProfileEntity profile;
 
+    public ProfileEntity getProfile() {
+        return profile;
+    }
+
     public CustomUserDetails(ProfileEntity profile) {
         this.profile = profile;
     }

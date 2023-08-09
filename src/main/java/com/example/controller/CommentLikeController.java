@@ -7,6 +7,7 @@ import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,24 +17,19 @@ public class CommentLikeController {
     @Autowired
     private CommentLikeService commentLikeService;
 
+
     @PostMapping(value = "/like/{commentId}")
-    public ResponseEntity<?> like(@PathVariable("commentId") String commentId,
-                                  HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        return ResponseEntity.ok(commentLikeService.like(jwtDTO.getId(), commentId));
+    public ResponseEntity<?> like(@PathVariable("commentId") String commentId) {
+        return ResponseEntity.ok(commentLikeService.like(commentId));
     }
 
     @PostMapping(value = "/dislike/{commentId}")
-    public ResponseEntity<?> dislike(@PathVariable("commentId") String commentId,
-                                     HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        return ResponseEntity.ok(commentLikeService.dislike(jwtDTO.getId(), commentId));
+    public ResponseEntity<?> dislike(@PathVariable("commentId") String commentId) {
+        return ResponseEntity.ok(commentLikeService.dislike(commentId));
     }
 
     @DeleteMapping(value = "/remove/{commentId}")
-    public ResponseEntity<?> remove(@PathVariable("commentId") String commentId,
-                                    HttpServletRequest request) {
-        JwtDTO jwtDTO=SecurityUtil.hasRole(request,null);
-        return ResponseEntity.ok(commentLikeService.remove(jwtDTO.getId(),commentId));
+    public ResponseEntity<?> remove(@PathVariable("commentId") String commentId) {
+        return ResponseEntity.ok(commentLikeService.remove(commentId));
     }
 }

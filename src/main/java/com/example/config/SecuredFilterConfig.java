@@ -6,12 +6,12 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class SecuredFilterConfig {
-    @Autowired
+//    @Autowired
     private JwtFilter jwtFilter;
 
-    @Bean
+//    @Bean
     public FilterRegistrationBean<Filter> filterRegistrationBean() {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
         bean.setFilter(jwtFilter);
@@ -23,7 +23,6 @@ public class SecuredFilterConfig {
         bean.addUrlPatterns("/api/v1/attach/closed/*");
         bean.addUrlPatterns("/api/v1/comment/closed/*");
         bean.addUrlPatterns("/api/v1/email/history/*");
-
         return bean;
     }
 }

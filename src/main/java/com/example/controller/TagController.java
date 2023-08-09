@@ -5,6 +5,7 @@ import com.example.service.TagService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,26 +15,26 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody TagDTO dto,
-                                    HttpServletRequest request) {
+    public ResponseEntity<?> create(@RequestBody TagDTO dto) {
         return ResponseEntity.ok(tagService.create(dto));
     }
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Integer tagId,
-                                    HttpServletRequest request) {
-      return ResponseEntity.ok(tagService.change(tagId));
+    public ResponseEntity<?> update(@PathVariable("id") Integer tagId) {
+        return ResponseEntity.ok(tagService.change(tagId));
     }
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer tagId,
-                                    HttpServletRequest request) {
+    public ResponseEntity<?> delete(@PathVariable("id") Integer tagId) {
         return ResponseEntity.ok(tagService.delete(tagId));
     }
-
+    @PreAuthorize("hasAnyRole('MODERATOR','PUBLISHER','ADMIN')")
     @GetMapping("")
-    public ResponseEntity<?> get(HttpServletRequest request) {
+    public ResponseEntity<?> get() {
         return ResponseEntity.ok(tagService.get());
     }
 

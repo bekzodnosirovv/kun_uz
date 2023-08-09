@@ -44,7 +44,7 @@ public class ProfileEntity extends BaseIdentityEntity {
     private ProfileEntity profile;
 
     @Column(name = "image_id")
-    private String image_id;
+    private String imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id", insertable = false, updatable = false)

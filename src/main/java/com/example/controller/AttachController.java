@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +23,6 @@ public class AttachController {
 
     @PostMapping(value = "/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
-
         return ResponseEntity.ok().body(attachService.save(file));
     }
 
@@ -42,17 +42,16 @@ public class AttachController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/pagination")
     public ResponseEntity<?> pagination(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
-//        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(attachService.pagination(page - 1, size));
     }
 
-    @DeleteMapping(value = "/closed/delete/{fileName}")
-    public ResponseEntity<?> delete(@PathVariable("fileName") String fileName,
-                                    HttpServletRequest request) {
-//        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(value = "/delete/{fileName}")
+    public ResponseEntity<?> delete(@PathVariable("fileName") String fileName) {
         attachService.delete(fileName);
         return ResponseEntity.ok("Deleted !!!");
     }

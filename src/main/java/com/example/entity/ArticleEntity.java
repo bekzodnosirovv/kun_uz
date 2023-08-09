@@ -47,21 +47,21 @@ public class ArticleEntity extends BaseStringEntity {
     private Integer categoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id",insertable = false,updatable = false)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private CategoryEntity category;
 
     @Column(name = "moderator_id")
     private Integer moderatorId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "moderator_id",insertable = false,updatable = false)
+    @JoinColumn(name = "moderator_id", insertable = false, updatable = false)
     private ProfileEntity moderator;
 
     @Column(name = "publisher_id")
     private Integer publisherId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publisher_id",insertable = false,updatable = false)
+    @JoinColumn(name = "publisher_id", insertable = false, updatable = false)
     private ProfileEntity publisher;
 
     @Enumerated(value = EnumType.STRING)
@@ -78,4 +78,10 @@ public class ArticleEntity extends BaseStringEntity {
 
     @OneToMany(mappedBy = "article")
     private List<ArticleTagsEntity> articleTags;
+
+    @Column(name = "like_count")
+    private Integer likeCount=0;
+
+    @Column(name = "dislike_count")
+    private Integer dislikeCount=0;
 }

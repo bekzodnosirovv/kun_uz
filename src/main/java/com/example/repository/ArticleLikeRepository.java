@@ -20,4 +20,5 @@ public interface ArticleLikeRepository extends CrudRepository<ArticleLikeEntity,
     @Query("delete from ArticleLikeEntity where profileId=:profileId and articleId=:articleId")
     int remove(@Param("profileId") Integer profileId,
                @Param("articleId") String articleId);
+
 }

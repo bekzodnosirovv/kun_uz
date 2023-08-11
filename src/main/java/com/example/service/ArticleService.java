@@ -204,7 +204,8 @@ public class ArticleService {
         CategoryDTO categoryDTO = categoryService.getDTO(entity.getCategory(), lan);
         fullInfo.setCategoryDTO(categoryDTO); // set category
         fullInfo.setTagList(articleTagsService.get(entity.getId()));
-
+        fullInfo.setLikeCount(entity.getLikeCount());
+        fullInfo.setDislikeCount(entity.getDislikeCount());
         // TODO fullInfo set like count and tag list
 
 
